@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class WebSocketRunner implements CommandLineRunner {
 
-    private final CryptoWebSocketClient client;
+    private final CryptoWebSocketReactiveClient client;
 
-    public WebSocketRunner(CryptoWebSocketClient client) {
+    public WebSocketRunner(CryptoWebSocketReactiveClient client) {
         this.client = client;
     }
 
