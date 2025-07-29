@@ -10,6 +10,8 @@ import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClien
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class CryptoWebSocketClient {
@@ -30,7 +32,7 @@ public class CryptoWebSocketClient {
                               "id": 1,
                               "method": "subscribe",
                               "params": {
-                                "channels": ["book.CRO_USDT.10"]
+                                "channels": ["book.CRO_USD.10"]
                               }
                             }
                             """;
@@ -60,6 +62,11 @@ public class CryptoWebSocketClient {
 
                                         // Parse and print message
                                         BookDataMessage parsed = objectMapper.readValue(payload, BookDataMessage.class);
+
+                                        LocalDateTime now = LocalDateTime.now();
+                                        String formatted = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                                        System.out.println("Current time: " + formatted);
+
                                         System.out.println("✅ Parsed DTO:\n" + parsed);
                                     } catch (Exception e) {
                                         System.err.println("Failed to parse message:\n" + payload);
