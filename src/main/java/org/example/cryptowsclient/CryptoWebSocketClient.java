@@ -19,66 +19,54 @@ public class CryptoWebSocketClient {
     private static final String WS_URL = "wss://stream.crypto.com/exchange/v1/market";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void connect() {
+    public void connect(String subscribeMessage) {
         ReactorNettyWebSocketClient client = new ReactorNettyWebSocketClient();
 
         client.execute(
                 URI.create(WS_URL),
-                new WebSocketHandler() {
-                    @Override
-                    public Mono<Void> handle(WebSocketSession session) {
-                        String subscribeMessage = """
-                            {
-                              "id": 1,
-                              "method": "subscribe",
-                              "params": {
-                                "channels": ["book.CRO_USD.10"]
-                              }
-                            }
-                            """;
+                session -> {
 
-                        // Send subscription message first
-                        Mono<Void> sendSubscription = session.send(Mono.just(session.textMessage(subscribeMessage)));
+                    // Send subscription message first
+                    Mono<Void> sendSubscription = session.send(Mono.just(session.textMessage(subscribeMessage)));
 
-                        // Handle incoming messages (including heartbeat)
-                        Mono<Void> receive = session.receive()
-                                .map(msg -> msg.getPayloadAsText())
-                                .flatMap(payload -> {
-                                    try {
-                                        // Handle heartbeat
-                                        if (payload.contains("\"method\":\"public/heartbeat\"")) {
-                                            System.out.println("Payload is " + payload.toString());
-                                            System.out.println("Heartbeat received — sending response");
-                                            Heartbeat parsed = objectMapper.readValue(payload, Heartbeat.class);
-                                            String heartbeatResponse = String.format("""
-                                                {
-                                                  "id": %d,
-                                                  "method": "public/respond-heartbeat"
-                                                }
-                                                """, parsed.getId());
-                                            return session.send(Mono.just(session.textMessage(heartbeatResponse)))
-                                                    .then(Mono.empty());
-                                        }
-
-                                        // Parse and print message
-                                        BookDataMessage parsed = objectMapper.readValue(payload, BookDataMessage.class);
-
-                                        LocalDateTime now = LocalDateTime.now();
-                                        String formatted = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                                        System.out.println("Current time: " + formatted);
-
-                                        System.out.println("✅ Parsed DTO:\n" + parsed);
-                                    } catch (Exception e) {
-                                        System.err.println("Failed to parse message:\n" + payload);
-                                        e.printStackTrace();
+                    // Handle incoming messages (including heartbeat)
+                    Mono<Void> receive = session.receive()
+                            .map(msg -> msg.getPayloadAsText())
+                            .flatMap(payload -> {
+                                try {
+                                    // Handle heartbeat
+                                    if (payload.contains("\"method\":\"public/heartbeat\"")) {
+                                        System.out.println("Payload is " + payload.toString());
+                                        System.out.println("Heartbeat received — sending response");
+                                        Heartbeat parsed = objectMapper.readValue(payload, Heartbeat.class);
+                                        String heartbeatResponse = String.format("""
+                                            {
+                                              "id": %d,
+                                              "method": "public/respond-heartbeat"
+                                            }
+                                            """, parsed.getId());
+                                        return session.send(Mono.just(session.textMessage(heartbeatResponse)))
+                                                .then(Mono.empty());
                                     }
-                                    return Mono.empty();
-                                })
-                                .doOnError(err -> System.err.println("WebSocket error: " + err.getMessage()))
-                                .doOnTerminate(() -> System.out.println("WebSocket connection terminated")).then();
 
-                        return sendSubscription.then(receive);
-                    }
+                                    // Parse and print message
+                                    BookDataMessage parsed = objectMapper.readValue(payload, BookDataMessage.class);
+
+                                    LocalDateTime now = LocalDateTime.now();
+                                    String formatted = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                                    System.out.println("Current time: " + formatted);
+
+                                    System.out.println("✅ Parsed DTO:\n" + parsed);
+                                } catch (Exception e) {
+                                    System.err.println("Failed to parse message:\n" + payload);
+                                    e.printStackTrace();
+                                }
+                                return Mono.empty();
+                            })
+                            .doOnError(err -> System.err.println("WebSocket error: " + err.getMessage()))
+                            .doOnTerminate(() -> System.out.println("WebSocket connection terminated")).then();
+
+                    return sendSubscription.then(receive);
                 }
         ).subscribe(
                 null,
