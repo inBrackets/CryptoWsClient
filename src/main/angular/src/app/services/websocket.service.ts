@@ -11,10 +11,14 @@ export class WebsocketService {
   private stompClient!: Client; // Modern STOMP client
 
   readonly timeStampTopic = "/subscribe/user.balance";
+  readonly foodTopic = "/subscribe/random.food";
+  readonly animalTopic = "/subscribe/random.animal";
   readonly websocketEndpoint = "http://localhost:8080/gs-guide-websocket";
 
   // Subject to push timestamp updates
   timestamp$ = new Subject<string>();
+  animal$ = new Subject<string>();
+  food$ = new Subject<string>();
 
   constructor() { }
 
@@ -35,6 +39,12 @@ export class WebsocketService {
       onConnect: () => {
         this.stompClient.subscribe(this.timeStampTopic, (message: IMessage) => {
           this.onTimeStampMessageReceived(message);
+        });
+        this.stompClient.subscribe(this.animalTopic, (message: IMessage) => {
+          this.onAnimalMessageReceived(message);
+        });
+        this.stompClient.subscribe(this.foodTopic, (message: IMessage) => {
+          this.onFoodMessageReceived(message);
         });
       },
 
@@ -64,5 +74,17 @@ export class WebsocketService {
     const timestamp = message.body;
     console.log("Message Received Timestamp::", timestamp);
     this.timestamp$.next(timestamp);
+  }
+
+  private onAnimalMessageReceived(message: IMessage) {
+    const animal = message.body;
+    console.log("Message Received Timestamp::", animal);
+    this.animal$.next(animal);
+  }
+
+  private onFoodMessageReceived(message: IMessage) {
+    const food = message.body;
+    console.log("Message Received Timestamp::", food);
+    this.food$.next(food);
   }
 }

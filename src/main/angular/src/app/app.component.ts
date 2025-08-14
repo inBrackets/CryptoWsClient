@@ -13,6 +13,8 @@ export class AppComponent {
   title = 'angular';
   websocketSrv = inject(WebsocketService);
   currentTimestamp: string = '';
+  currentAnimal: string = '';
+  currentFood: string = '';
 
   ngOnInit(): void {
     console.log('connecting...');
@@ -20,6 +22,14 @@ export class AppComponent {
 
     this.websocketSrv.timestamp$.subscribe(timestamp => {
       this.currentTimestamp = timestamp;
+    });
+
+    this.websocketSrv.animal$.subscribe(message => {
+      this.currentAnimal = message;
+    });
+
+    this.websocketSrv.food$.subscribe(message => {
+      this.currentFood = message;
     });
   }
 }
