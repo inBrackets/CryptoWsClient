@@ -230,6 +230,12 @@
       <p>{{ currentTimestamp }}</p>
       <p>Animal: {{ currentAnimal }}</p>
       <p>Food: {{ currentFood }}</p>
+      <p>Orderbook: {{ currentOrderbook }}</p>
+      <ul>
+        @for (animal of lastAnimals; track animal) {
+          <li>{{animal}}</li>
+        }
+      </ul>
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>
     <div class="right-side">

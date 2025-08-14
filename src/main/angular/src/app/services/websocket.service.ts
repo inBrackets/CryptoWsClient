@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import SockJS from 'sockjs-client';
 import { Client, IMessage } from '@stomp/stompjs';
 import { Subject } from 'rxjs';
+import {Orderbook} from '../dto/interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +14,14 @@ export class WebsocketService {
   readonly timeStampTopic = "/subscribe/user.balance";
   readonly foodTopic = "/subscribe/random.food";
   readonly animalTopic = "/subscribe/random.animal";
+  readonly orderBookTopic = "/subscribe/user.orderbook";
   readonly websocketEndpoint = "http://localhost:8080/gs-guide-websocket";
 
   // Subject to push timestamp updates
   timestamp$ = new Subject<string>();
   animal$ = new Subject<string>();
   food$ = new Subject<string>();
+  orderbook$ = new Subject<Orderbook>();
 
   constructor() { }
 
@@ -45,6 +48,9 @@ export class WebsocketService {
         });
         this.stompClient.subscribe(this.foodTopic, (message: IMessage) => {
           this.onFoodMessageReceived(message);
+        });
+        this.stompClient.subscribe(this.orderBookTopic, (message: IMessage) => {
+          this.onOrderBookMessageReceived(message);
         });
       },
 
@@ -86,5 +92,15 @@ export class WebsocketService {
     const food = message.body;
     console.log("Message Received Timestamp::", food);
     this.food$.next(food);
+  }
+
+  private onOrderBookMessageReceived(message: IMessage) {
+    try {
+      const orderbook: Orderbook = JSON.parse(message.body) as Orderbook;
+      console.log("Message Received Timestamp::", orderbook);
+      this.orderbook$.next(orderbook);
+    } catch (error) {
+      console.error("Failed to parse orderbook message", error, message.body);
+    }
   }
 }
