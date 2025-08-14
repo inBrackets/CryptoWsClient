@@ -9,8 +9,7 @@ export const routes: Routes = [
     path: '',
     component: LayoutComponent,
     children: [
-      { path: '', component: AppComponent },
-      { path: 'misc', component: MiscComponent }
+      { path: '', component: MiscComponent }
     ]
   }
 ];
