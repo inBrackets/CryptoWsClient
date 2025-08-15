@@ -14,14 +14,17 @@ import { BookWebsocketService } from '../../services/book.websocket.service';
 export class OrderBookLiveChartComponent implements OnInit {
 
   updateFlag = false;
+  instrumentName: string = "";
 
   bidsData: OrderPoint[] = [];
   asksData: OrderPoint[] = [];
 
   websocketSrv = inject(BookWebsocketService);
 
-
   chartOptions: Highcharts.Options = {
+
+    // @ts-ignore
+    instrumentName: this.instrumentName,
 
       chart: {
         animation: {
@@ -82,7 +85,12 @@ export class OrderBookLiveChartComponent implements OnInit {
         // max: 100000,
         labels: {
           enabled: true,
-          format: '{#if isLast}Asks{/if}',
+          formatter: function () {
+            if ((this as any).isLast) {
+              return 'Asks';
+            }
+            return '';
+          },
           style: {
             color: '#ffffff',
             fontSize: '16px',
@@ -109,10 +117,17 @@ export class OrderBookLiveChartComponent implements OnInit {
         // max: 100000,
         labels: {
           enabled: true,
-          format: `
-                {#if (eq pos 0)}Price ($){/if}
-                {#if isLast}Bids{/if}
-            `,
+          formatter: function () {
+            // "this" here is Highcharts axis label context, not your Angular component
+            const instrumentName = (this.axis.chart.userOptions as any).instrumentName || '';
+            if ((this as any).pos === 0) {
+              return `Price (${instrumentName})`;
+            }
+            if ((this as any).isLast) {
+              return 'Bids';
+            }
+            return '';
+          },
           style: {
             color: '#ffffff',
             fontSize: '16px',
@@ -188,6 +203,7 @@ export class OrderBookLiveChartComponent implements OnInit {
 
     this.websocketSrv.orderbook$.subscribe(message => {
       const currentOrderbookData = message.result.data[0] as OrderbookData;
+      this.instrumentName = message.result.instrument_name;
 
       // --- Cumulative Asks ---
       let cumulativeAsk = 0;
@@ -219,6 +235,8 @@ export class OrderBookLiveChartComponent implements OnInit {
       // Update series data directly
       (this.chartOptions.series![0] as Highcharts.SeriesBarOptions).data = this.asksData;
       (this.chartOptions.series![1] as Highcharts.SeriesBarOptions).data = this.bidsData;
+
+      (this.chartOptions as any).instrumentName = this.instrumentName;
 
       // Trigger chart refresh
       this.updateFlag = true;
