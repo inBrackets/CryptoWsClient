@@ -31,7 +31,6 @@ public class CryptoWebSocketClient {
     public void connect(String subscribeMessage, String channelName) {
         // 1️⃣ Unsubscribe from the previous channel if active
         if (activeConnection != null && !activeConnection.isDisposed()) {
-            unsubscribe(lastSubscribedChannel);
             activeConnection.dispose();
             System.out.println("Previous WebSocket connection closed");
         }
@@ -89,22 +88,5 @@ public class CryptoWebSocketClient {
             e.printStackTrace();
         }
         return Mono.empty();
-    }
-
-    // 4️⃣ Send unsubscribe message before closing
-    private void unsubscribe(String channel) {
-        if (channel != null) {
-            String unsubscribeMsg = String.format("""
-                {
-                  "method": "unsubscribe",
-                  "params": {
-                    "channels": ["%s"]
-                  }
-                }
-                """, channel);
-            System.out.println("Unsubscribing from channel: " + channel);
-            // Note: The unsubscribe message will only be sent if session is still open
-            // In a more advanced version, you would keep a reference to the session.
-        }
     }
 }
