@@ -187,17 +187,32 @@ export class OrderBookLiveChartComponent implements OnInit {
     this.websocketSrv.orderbook$.subscribe(message => {
       const currentOrderbookData = message.result.data[0] as OrderbookData;
 
-      this.asksData = currentOrderbookData.asks.map((a, i) => ({
-        x: i,
-        y: Number(a[1]),  // volume
-        price: Number(a[0]) // price
-      }));
+      // --- Cumulative Asks ---
+      let cumulativeAsk = 0;
+      this.asksData = currentOrderbookData.asks.map((a, i) => {
+        cumulativeAsk += Number(a[1]); // sum volume
+        return {
+          x: i,
+          y: cumulativeAsk,       // cumulative volume
+          price: Number(a[0])
+        };
+      });
 
-      this.bidsData = currentOrderbookData.bids.map((b, i) => ({
-        x: i,
-        y: Number(b[1]),
-        price: Number(b[0])
-      }));
+      // --- Cumulative Bids ---
+      let cumulativeBid = 0;
+      // Usually bids are sorted from highest to lowest price, so sum in reverse
+      this.bidsData = currentOrderbookData.bids
+        .slice() // copy array
+        .reverse()
+        .map((b, i) => {
+          cumulativeBid += Number(b[1]);
+          return {
+            x: i,
+            y: cumulativeBid,
+            price: Number(b[0])
+          };
+        })
+        .reverse(); // restore original order
 
       // Update series data directly
       (this.chartOptions.series![0] as Highcharts.SeriesBarOptions).data = this.asksData;
@@ -206,7 +221,6 @@ export class OrderBookLiveChartComponent implements OnInit {
       // Trigger chart refresh
       this.updateFlag = true;
     });
-
   }
 
 }
