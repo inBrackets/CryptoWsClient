@@ -67,13 +67,11 @@ public class CryptoWebSocketClient {
             // Handle heartbeat
             if (payload.contains("\"method\":\"public/heartbeat\"")) {
                 Heartbeat parsed = objectMapper.readValue(payload, Heartbeat.class);
-                String heartbeatResponse = String.format("""
-                        {
-                          "id": %d,
-                          "method": "public/respond-heartbeat"
-                        }
-                        """, parsed.getId());
-                return session.send(Mono.just(session.textMessage(heartbeatResponse))).then(Mono.empty());
+                Heartbeat heartbeatResponse = Heartbeat.builder()
+                        .id(parsed.getId())
+                        .method("public/respond-heartbeat")
+                        .build();
+                return session.send(Mono.just(session.textMessage(heartbeatResponse.toJson()))).then(Mono.empty());
             }
 
             // Handle book data
