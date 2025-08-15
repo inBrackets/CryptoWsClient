@@ -35,6 +35,6 @@ public class WebSocketRunner implements CommandLineRunner {
                         "nonce": null
                         }
                         """;
-        client.connect(request.toJson());
+        // client.connect(request.toJson());
     }
 }

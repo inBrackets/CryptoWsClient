@@ -25,21 +25,21 @@ public class TimestampPublisher {
         this.messagingTemplate = messagingTemplate;
     }
 
-    @Scheduled(fixedRate = 1000) // every 1 second
+    @Scheduled(fixedRate = 10000) // every 1 second
     public void publishTimestamp() {
         String currentTime = LocalDateTime.now().format(formatter);
         messagingTemplate.convertAndSend("/topic/user.balance", currentTime);
         System.out.println("Timestamp published: " + currentTime);
     }
 
-    @Scheduled(fixedRate = 500)
+    @Scheduled(fixedRate = 5000)
     public void publishRandomAnimal() {
         String animal = animals.get(random.nextInt(animals.size()));
         messagingTemplate.convertAndSend("/topic/random.animal", animal);
         System.out.println("Animal published: " + animal);
     }
 
-    @Scheduled(fixedRate = 357)
+    @Scheduled(fixedRate = 3570)
     public void publishRandomFood() {
         String food = foods.get(random.nextInt(foods.size()));
         messagingTemplate.convertAndSend("/topic/random.food", food);

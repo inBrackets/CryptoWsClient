@@ -1,3 +1,5 @@
+<input [(ngModel)]="channel" placeholder="Enter channel (e.g. book.CRO_USD.10)">
+<button (click)="connect()">Connect</button>
 <b>OrderBook: </b><p>{{ currentOrderbook | json }}</p>
 <b>OrderBookData: </b><p>{{ currentOrderbookData | json }}</p>
 
