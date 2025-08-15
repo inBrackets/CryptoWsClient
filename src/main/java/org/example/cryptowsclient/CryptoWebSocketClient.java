@@ -79,7 +79,7 @@ public class CryptoWebSocketClient {
             String formatted = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             System.out.println("[" + formatted + "] Parsed DTO:\n" + parsed);
 
-            messagingTemplate.convertAndSend("/topic/user.orderbook", parsed);
+            messagingTemplate.convertAndSend("/topic/book", parsed);
 
         } catch (Exception e) {
             System.err.println("Failed to parse message:\n" + payload);

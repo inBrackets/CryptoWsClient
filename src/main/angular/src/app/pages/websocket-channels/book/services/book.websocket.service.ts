@@ -11,7 +11,7 @@ export class BookWebsocketService {
 
   private stompClient!: Client; // Modern STOMP client
 
-  readonly orderBookTopic = "/topic/user.orderbook";
+  readonly orderBookTopic = "/topic/book";
   readonly websocketEndpoint = "http://localhost:8080/ws";
 
   orderbook$ = new Subject<Orderbook>();
