@@ -40,12 +40,12 @@ export class OrderBookLiveChartComponent implements OnInit {
   private generateBidAndAskData(n: number): [OrderPoint[], OrderPoint[]] {
       const data: [OrderPoint[], OrderPoint[]] = [[], []];
 
-      let bidPrice = this.getRandomNumber(29000, 30000);
-      let askPrice = bidPrice + 0.5;
+      let bidPrice = this.getRandomNumber(0.11, 0.16);
+      let askPrice = bidPrice + 0.001;
 
       for (let i = 0; i < n; i++) {
-        bidPrice -= i * this.getRandomNumber(8, 10);
-        askPrice += i * this.getRandomNumber(8, 10);
+        bidPrice -= i * this.getRandomNumber(0.001, 0.001);
+        askPrice += i * this.getRandomNumber(0.001, 0.001);
 
         data[0].push({
           x: i,
@@ -189,7 +189,7 @@ export class OrderBookLiveChartComponent implements OnInit {
             fontSize: '13px',
             textOutline: 'none'
           },
-          format: '{point.price:,.1f}'
+          format: '{point.price:,.5f}'
         }],
         name: 'Asks',
         color: '#ce4548',
@@ -211,7 +211,7 @@ export class OrderBookLiveChartComponent implements OnInit {
             fontSize: '13px',
             textOutline: 'none'
           },
-          format: '{point.price:,.1f}'
+          format: '{point.price:,.5f}'
         }],
         name: 'Bids',
         color: '#107db7',
