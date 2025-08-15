@@ -151,6 +151,7 @@ export class OrderBookLiveChartComponent implements OnInit {
 
       series: [{
         type: 'bar',
+        pointWidth: 25, // thicker bars (Asks)
         dataLabels: [{
           align: 'right',
           alignTo: 'plotEdges',
@@ -173,6 +174,7 @@ export class OrderBookLiveChartComponent implements OnInit {
         data: this.asksData
       }, {
         type: 'bar',
+        pointWidth: 25, // thicker bars (Bids)
         dataLabels: [{
           align: 'left',
           alignTo: 'plotEdges',
