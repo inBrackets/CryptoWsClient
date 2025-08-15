@@ -158,7 +158,7 @@ export class OrderBookLiveChartComponent implements OnInit {
           format: '{point.price:,.5f}'
         }],
         name: 'Asks',
-        color: '#ce4548',
+        color: '#C1666B',
         data: this.asksData
       }, {
         type: 'bar',
@@ -180,7 +180,7 @@ export class OrderBookLiveChartComponent implements OnInit {
           format: '{point.price:,.5f}'
         }],
         name: 'Bids',
-        color: '#107db7',
+        color: '#48A9A6',
         data: this.bidsData,
         yAxis: 1
       }]
