@@ -42,6 +42,12 @@ export class OrderBookLiveChartComponent implements OnInit {
         }
       },
 
+    tooltip: {
+      headerFormat: 'Price: <b>${point.point.price:,.5f}</b></br>',
+      pointFormat: '{series.name}: <b>{point.y:,.0f}</b>',
+      shape: 'rect'
+    },
+
       xAxis: [{
         reversed: true,
         visible: false,
