@@ -5,12 +5,14 @@ import {JsonPipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {BookRestService} from '../services/book.rest.service';
 import {HttpClient} from '@angular/common/http';
+import {OrderBookLiveChartComponent} from './order-book-live-chart/order-book-live-chart.component';
 
 @Component({
   selector: 'app-book',
   imports: [
     JsonPipe,
-    FormsModule
+    FormsModule,
+    OrderBookLiveChartComponent
   ],
   templateUrl: './book.component.html',
   standalone: true,

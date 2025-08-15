@@ -19,3 +19,9 @@ export interface OrderbookData {
   u: number;
   cs: number;
 }
+
+export interface OrderPoint {
+  x: number; // order
+  y: number; // volume
+  price: number;
+}
