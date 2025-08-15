@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {Client, IMessage} from '@stomp/stompjs';
 import {Subject} from 'rxjs';
 import SockJS from 'sockjs-client';
+import {Orderbook} from '../model/dto';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class BookService {
   readonly orderBookTopic = "/subscribe/user.orderbook";
   readonly websocketEndpoint = "http://localhost:8080/gs-guide-websocket";
 
-  orderbook$ = new Subject<string>();
+  orderbook$ = new Subject<Orderbook>();
 
   constructor() { }
 
@@ -56,8 +57,12 @@ export class BookService {
   }
 
   private onOrderBookMessageReceived(message: IMessage) {
-    const orderbook = message.body;
-    console.log("Message Received Timestamp::", orderbook);
-    this.orderbook$.next(orderbook);
+    try {
+      const orderbook: Orderbook = JSON.parse(message.body) as Orderbook;
+      console.log("Message Received OrderBook::", orderbook);
+      this.orderbook$.next(orderbook);
+    } catch (error) {
+      console.error("Failed to parse orderbook message", error, message.body);
+    }
   }
 }
