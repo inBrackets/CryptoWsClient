@@ -30,7 +30,7 @@ public class WebSocketController {
                 .nonce(null)
                 .build();
 
-        client.connect(request.toJson());
+        client.connect(request.toJson(), channel);
         return "Subscribed to " + channel;
     }
 }
