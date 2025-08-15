@@ -1,7 +1,8 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {HighchartsChartComponent} from 'highcharts-angular';
-import {OrderbookData, OrderPoint} from '../../model/dto';
-import {BookWebsocketService} from '../../services/book.websocket.service';
+import { Component, inject, OnInit } from '@angular/core';
+import { HighchartsChartComponent } from 'highcharts-angular';
+import * as Highcharts from 'highcharts';
+import { OrderbookData, OrderPoint } from '../../model/dto';
+import { BookWebsocketService } from '../../services/book.websocket.service';
 
 @Component({
   selector: 'app-order-book-live-chart',
@@ -12,60 +13,19 @@ import {BookWebsocketService} from '../../services/book.websocket.service';
 })
 export class OrderBookLiveChartComponent implements OnInit {
 
+  Highcharts: typeof Highcharts = Highcharts;
+  updateFlag = false;
+
   bidsData: OrderPoint[] = [];
   asksData: OrderPoint[] = [];
 
+  maxBidVolume:number = 0;
+  maxAskVolume:number = 0;
+
   websocketSrv = inject(BookWebsocketService);
 
-  chartOptions: Highcharts.Options = {}
 
-  ngOnInit(): void {
-    console.log('connecting...');
-    this.websocketSrv.connect();
-    [this.bidsData, this.asksData] = this.generateBidAndAskData(10);
-    this.updateChart(this.bidsData, this.asksData);
-
-    this.websocketSrv.orderbook$.subscribe(message => {
-      var currentOrderbook = message;
-      var currentOrderbookData = message.result.data[0] as OrderbookData;
-      //this.currentOrderbook = message.result.data[0]?.asks[0]?.[0];
-
-    });
-  }
-
-  private getRandomNumber(min: number, max: number): number {
-      return Math.round(Math.random() * (max - min)) + min;
-    }
-
-  private generateBidAndAskData(n: number): [OrderPoint[], OrderPoint[]] {
-      const data: [OrderPoint[], OrderPoint[]] = [[], []];
-
-      let bidPrice = this.getRandomNumber(0.11, 0.16);
-      let askPrice = bidPrice + 0.001;
-
-      for (let i = 0; i < n; i++) {
-        bidPrice -= i * this.getRandomNumber(0.001, 0.001);
-        askPrice += i * this.getRandomNumber(0.001, 0.001);
-
-        data[0].push({
-          x: i,
-          y: (i + 1) * this.getRandomNumber(70000, 110000),
-          price: bidPrice
-        });
-
-        data[1].push({
-          x: i,
-          y: (i + 1) * this.getRandomNumber(70000, 110000),
-          price: askPrice
-        });
-      }
-
-      return data;
-    }
-
-
-  updateChart(bidsData : OrderPoint[], asksData : OrderPoint[]) {
-    this.chartOptions = {
+  chartOptions: Highcharts.Options = {
 
       chart: {
         animation: {
@@ -117,7 +77,7 @@ export class OrderBookLiveChartComponent implements OnInit {
           }
         },
         min: 0,
-        max: 1200000,
+        max: 100000,
         labels: {
           enabled: true,
           format: '{#if isLast}Asks{/if}',
@@ -144,7 +104,7 @@ export class OrderBookLiveChartComponent implements OnInit {
           }
         },
         min: 0,
-        max: 1200000,
+        max: 100000,
         labels: {
           enabled: true,
           format: `
@@ -193,7 +153,7 @@ export class OrderBookLiveChartComponent implements OnInit {
         }],
         name: 'Asks',
         color: '#ce4548',
-        data: asksData
+        data: this.asksData
       }, {
         type: 'bar',
         dataLabels: [{
@@ -215,10 +175,38 @@ export class OrderBookLiveChartComponent implements OnInit {
         }],
         name: 'Bids',
         color: '#107db7',
-        data: bidsData,
+        data: this.bidsData,
         yAxis: 1
       }]
-    }
+    };
+
+  ngOnInit(): void {
+    console.log('connecting...');
+    this.websocketSrv.connect();
+
+    this.websocketSrv.orderbook$.subscribe(message => {
+      const currentOrderbookData = message.result.data[0] as OrderbookData;
+
+      this.asksData = currentOrderbookData.asks.map((a, i) => ({
+        x: i,
+        y: Number(a[1]),  // volume
+        price: Number(a[0]) // price
+      }));
+
+      this.bidsData = currentOrderbookData.bids.map((b, i) => ({
+        x: i,
+        y: Number(b[1]),
+        price: Number(b[0])
+      }));
+
+      // Update series data directly
+      (this.chartOptions.series![0] as Highcharts.SeriesBarOptions).data = this.asksData;
+      (this.chartOptions.series![1] as Highcharts.SeriesBarOptions).data = this.bidsData;
+
+      // Trigger chart refresh
+      this.updateFlag = true;
+    });
+
   }
 
 }
