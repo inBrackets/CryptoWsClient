@@ -13,14 +13,10 @@ import { BookWebsocketService } from '../../services/book.websocket.service';
 })
 export class OrderBookLiveChartComponent implements OnInit {
 
-  Highcharts: typeof Highcharts = Highcharts;
   updateFlag = false;
 
   bidsData: OrderPoint[] = [];
   asksData: OrderPoint[] = [];
-
-  maxBidVolume:number = 0;
-  maxAskVolume:number = 0;
 
   websocketSrv = inject(BookWebsocketService);
 
