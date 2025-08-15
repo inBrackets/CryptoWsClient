@@ -15,7 +15,7 @@ export class WebsocketService {
   readonly foodTopic = "/subscribe/random.food";
   readonly animalTopic = "/subscribe/random.animal";
   readonly orderBookTopic = "/subscribe/user.orderbook";
-  readonly websocketEndpoint = "http://localhost:8080/gs-guide-websocket";
+  readonly websocketEndpoint = "http://localhost:8080/ws";
 
   // Subject to push timestamp updates
   timestamp$ = new Subject<string>();
