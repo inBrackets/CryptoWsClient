@@ -2,6 +2,7 @@ import {Component, inject} from '@angular/core';
 import {WebsocketService} from '../../services/websocket.service';
 import {RouterOutlet} from '@angular/router';
 import {LayoutComponent} from '../../layout/layout/layout.component';
+import {OrderbookResult} from '../../dto/interfaces';
 
 @Component({
   selector: 'app-misc',
@@ -43,7 +44,8 @@ export class MiscComponent {
     });
 
     this.websocketSrv.orderbook$.subscribe(message => {
-      this.currentOrderbook = message.result.data[0]?.asks[0]?.[0];
+      this.currentOrderbook = message;
+      //this.currentOrderbook = message.result.data[0]?.asks[0]?.[0];
     });
   }
 }

@@ -21,7 +21,7 @@ export class WebsocketService {
   timestamp$ = new Subject<string>();
   animal$ = new Subject<string>();
   food$ = new Subject<string>();
-  orderbook$ = new Subject<Orderbook>();
+  orderbook$ = new Subject<string>();
 
   constructor() { }
 
@@ -96,8 +96,9 @@ export class WebsocketService {
 
   private onOrderBookMessageReceived(message: IMessage) {
     try {
-      const orderbook: Orderbook = JSON.parse(message.body) as Orderbook;
+      const orderbook = message.body;
       console.log("Message Received Timestamp::", orderbook);
+      // @ts-ignore
       this.orderbook$.next(orderbook);
     } catch (error) {
       console.error("Failed to parse orderbook message", error, message.body);
