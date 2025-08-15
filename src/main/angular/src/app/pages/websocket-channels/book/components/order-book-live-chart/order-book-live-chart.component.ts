@@ -82,8 +82,8 @@ export class OrderBookLiveChartComponent implements OnInit {
             visibility: 'hidden'
           }
         },
-        min: 0,
-        max: 100000,
+        // min: 0,
+        // max: 100000,
         labels: {
           enabled: true,
           format: '{#if isLast}Asks{/if}',
@@ -109,8 +109,8 @@ export class OrderBookLiveChartComponent implements OnInit {
             visibility: 'hidden'
           }
         },
-        min: 0,
-        max: 100000,
+        // min: 0,
+        // max: 100000,
         labels: {
           enabled: true,
           format: `
