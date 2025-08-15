@@ -11,10 +11,10 @@ export class WebsocketService {
 
   private stompClient!: Client; // Modern STOMP client
 
-  readonly timeStampTopic = "/subscribe/user.balance";
-  readonly foodTopic = "/subscribe/random.food";
-  readonly animalTopic = "/subscribe/random.animal";
-  readonly orderBookTopic = "/subscribe/user.orderbook";
+  readonly timeStampTopic = "/topic/user.balance";
+  readonly foodTopic = "/topic/random.food";
+  readonly animalTopic = "/topic/random.animal";
+  readonly orderBookTopic = "/topic/user.orderbook";
   readonly websocketEndpoint = "http://localhost:8080/ws";
 
   // Subject to push timestamp updates

@@ -63,7 +63,7 @@ public class CryptoWebSocketClient {
                                     System.out.println("[" + formatted + "] Parsed DTO:\n" + parsed);
 
                                     // Send to internal STOMP topic
-                                    messagingTemplate.convertAndSend("/subscribe/user.orderbook", parsed);
+                                    messagingTemplate.convertAndSend("/topic/user.orderbook", parsed);
 
                                 } catch (Exception e) {
                                     System.err.println("Failed to parse message:\n" + payload);

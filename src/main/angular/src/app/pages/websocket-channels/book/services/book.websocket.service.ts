@@ -7,11 +7,11 @@ import {Orderbook} from '../model/dto';
 @Injectable({
   providedIn: 'root'
 })
-export class BookService {
+export class BookWebsocketService {
 
   private stompClient!: Client; // Modern STOMP client
 
-  readonly orderBookTopic = "/subscribe/user.orderbook";
+  readonly orderBookTopic = "/topic/user.orderbook";
   readonly websocketEndpoint = "http://localhost:8080/ws";
 
   orderbook$ = new Subject<Orderbook>();

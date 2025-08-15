@@ -1,5 +1,5 @@
 import {Component, inject} from '@angular/core';
-import {BookService} from '../services/book.service';
+import {BookWebsocketService} from '../services/book.websocket.service';
 import {Orderbook, OrderbookData} from '../model/dto';
 import {JsonPipe} from '@angular/common';
 
@@ -14,7 +14,7 @@ import {JsonPipe} from '@angular/common';
 })
 export class BookComponent {
 
-  websocketSrv = inject(BookService);
+  websocketSrv = inject(BookWebsocketService);
   currentOrderbook: Orderbook | undefined;
   currentOrderbookData: OrderbookData | undefined;
 
