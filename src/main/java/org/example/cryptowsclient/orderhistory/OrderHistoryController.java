@@ -1,7 +1,13 @@
 package org.example.cryptowsclient.orderhistory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.cryptowsclient.common.ApiRequestJson;
 import org.example.cryptowsclient.common.ApplicationProperties;
+import org.example.cryptowsclient.orderhistory.dto.OrderItemDto;
+import org.example.cryptowsclient.orderhistory.dto.ResponseDto;
+import org.example.cryptowsclient.orderhistory.dto.ResultDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,7 +29,7 @@ public class OrderHistoryController {
 
     @GetMapping("/private/get-order-history")
     @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
-    public ResponseEntity<String> forwardRequest() {
+    public ResponseEntity<ResponseDto<ResultDto<OrderItemDto>>> forwardRequest() {
         String targetUrl = "https://api.crypto.com/exchange/v1/private/get-order-history";
 
         ApiRequestJson request = ApiRequestJson.builder()
@@ -52,8 +58,21 @@ public class OrderHistoryController {
                 String.class
         );
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        // Deserialize JSON into your DTO
+        ResponseDto<ResultDto<OrderItemDto>> dto;
+        try {
+            dto = objectMapper.readValue(
+                    response.getBody(),
+                    new TypeReference<>() {
+                    }
+            );
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
         return ResponseEntity
                 .status(response.getStatusCode())
-                .body(response.getBody());
+                .body(dto);
     }
 }
