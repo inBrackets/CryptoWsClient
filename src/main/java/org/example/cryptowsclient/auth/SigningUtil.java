@@ -9,7 +9,11 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Hex;
+import org.example.cryptowsclient.common.ApiRequestJson;
 
 public class SigningUtil {
 
@@ -100,6 +104,18 @@ public class SigningUtil {
         return apiRequestJson;
     }
 
+    public static String signAndParseToJsonString(ApiRequestJson apiRequestJson, String secret) {
+        apiRequestJson.setNonce(System.currentTimeMillis());
+        ObjectMapper mapper = new ObjectMapper();
+        String requestJsonBody;
+        try {
+            requestJsonBody = mapper.writeValueAsString(sign(apiRequestJson, secret));
+        } catch (JsonProcessingException | InvalidKeyException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        return requestJsonBody;
+    }
+
     public static void main(String[] argv) throws InvalidKeyException, NoSuchAlgorithmException {
         ApiRequestJson apiRequestJson = ApiRequestJson.builder()
                 .id(11L)
@@ -111,6 +127,8 @@ public class SigningUtil {
         System.out.println(genSignature(apiRequestJson, "se"));
 
         System.out.println(sign(apiRequestJson, "se"));
+
+        System.out.println(signAndParseToJsonString(apiRequestJson, "se"));
 
     }
 }
