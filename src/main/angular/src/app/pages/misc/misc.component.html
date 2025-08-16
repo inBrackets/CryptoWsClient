@@ -1,0 +1,12 @@
+
+<h1>Hello, {{ title }}</h1>
+<p>Congratulations! Your app is running. 🎉</p>
+<p>{{ currentTimestamp }}</p>
+<p>Animal: {{ currentAnimal }}</p>
+<p>Food: {{ currentFood }}</p>
+<p>Orderbook: {{ currentOrderbook }}</p>
+<ul>
+  @for (animal of lastAnimals; track animal) {
+    <li>{{animal}}</li>
+  }
+</ul>
