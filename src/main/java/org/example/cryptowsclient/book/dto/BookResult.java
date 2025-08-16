@@ -1,4 +1,4 @@
-package org.example.cryptowsclient.dto;
+package org.example.cryptowsclient.book.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

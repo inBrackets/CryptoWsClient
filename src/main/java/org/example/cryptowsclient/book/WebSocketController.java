@@ -1,7 +1,7 @@
-package org.example.cryptowsclient;
+package org.example.cryptowsclient.book;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.example.cryptowsclient.dto.websocket.SubscribeRequest;
+import org.example.cryptowsclient.book.dto.SubscribeRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

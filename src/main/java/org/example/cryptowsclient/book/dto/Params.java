@@ -1,4 +1,4 @@
-package org.example.cryptowsclient.dto.websocket;
+package org.example.cryptowsclient.book.dto;
 
 import java.util.List;
 

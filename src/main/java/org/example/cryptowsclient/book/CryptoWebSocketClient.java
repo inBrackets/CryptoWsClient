@@ -1,8 +1,8 @@
-package org.example.cryptowsclient;
+package org.example.cryptowsclient.book;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.cryptowsclient.dto.BookDataMessage;
-import org.example.cryptowsclient.dto.Heartbeat;
+import org.example.cryptowsclient.book.dto.BookDataMessage;
+import org.example.cryptowsclient.book.dto.Heartbeat;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
