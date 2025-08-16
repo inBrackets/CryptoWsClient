@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -21,6 +22,7 @@ public class OrderHistoryController {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/private/get-order-history")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
     public ResponseEntity<String> forwardRequest() {
         String targetUrl = "https://api.crypto.com/exchange/v1/private/get-order-history";
 
