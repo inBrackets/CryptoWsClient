@@ -53,4 +53,24 @@ export class OrderComponent implements OnInit {
     if (order.result.data[0].side === 'SELL' && order.result.data[0].status === 'FILLED') return 'table-success';
     return '';
   }
+
+  removeOrdersById(orderId: string) {
+    // collect all statuses for this order_id
+    const matchingStatuses = this.lastUserOrders
+      .filter(o => o.result.data[0].order_id === orderId)
+      .map(o => o.result.data[0].status);
+
+    // build confirmation message
+    const confirmationMsg = `
+    You are about to remove ALL rows with order_id: ${orderId}.
+    Statuses found: ${matchingStatuses.join(', ')}.
+
+    Do you want to proceed?`;
+
+    if (confirm(confirmationMsg)) {
+      this.lastUserOrders = this.lastUserOrders.filter(
+        o => o.result.data[0].order_id !== orderId
+      );
+    }
+  }
 }

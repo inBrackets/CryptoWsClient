@@ -33,7 +33,11 @@
         <td>{{userOrderRow.result.data[0].create_time | date:'yyyy-MM-dd HH:mm:ss'}} / {{userOrderRow.result.data[0].update_time | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{userOrderRow.result.data[0].status}}</td>
         <td>
-          <button class="btn btn-sm btn-danger" (click)="removeOrder($index)">Remove</button>
+          <button
+            class="btn btn-sm btn-danger"
+            (click)="removeOrdersById(userOrderRow.result.data[0].order_id)">
+            Remove
+          </button>
         </td>
       </tr>
     }
