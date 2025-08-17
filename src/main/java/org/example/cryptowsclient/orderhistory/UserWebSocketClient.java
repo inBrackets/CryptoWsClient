@@ -1,6 +1,7 @@
 package org.example.cryptowsclient.orderhistory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.cryptowsclient.book.dto.Heartbeat;
 import org.example.cryptowsclient.orderhistory.dto.UserOrderResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -52,15 +53,14 @@ public class UserWebSocketClient {
     private Mono<Void> handleMessage(org.springframework.web.reactive.socket.WebSocketSession session, String payload, String topic) {
         try {
             // Handle heartbeat
-            // occurs only in MD subscriptions
-//            if (payload.contains("\"method\":\"public/heartbeat\"")) {
-//                Heartbeat parsed = objectMapper.readValue(payload, Heartbeat.class);
-//                Heartbeat heartbeatResponse = Heartbeat.builder()
-//                        .id(parsed.getId())
-//                        .method("public/respond-heartbeat")
-//                        .build();
-//                return session.send(Mono.just(session.textMessage(heartbeatResponse.toJson()))).then(Mono.empty());
-//            }
+            if (payload.contains("\"method\":\"public/heartbeat\"")) {
+                Heartbeat parsed = objectMapper.readValue(payload, Heartbeat.class);
+                Heartbeat heartbeatResponse = Heartbeat.builder()
+                        .id(parsed.getId())
+                        .method("public/respond-heartbeat")
+                        .build();
+                return session.send(Mono.just(session.textMessage(heartbeatResponse.toJson()))).then(Mono.empty());
+            }
             // Handle authentication failure
             // fixed, but still want to keep these lines for the future
 //            if (payload.contains("\"code\":\"40101\"")) {
