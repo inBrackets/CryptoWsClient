@@ -1,22 +1,28 @@
-package org.example.cryptowsclient.book;
+package org.example.cryptowsclient.orderhistory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.cryptowsclient.book.dto.BookDataMessage;
 import org.example.cryptowsclient.book.dto.Heartbeat;
+import org.example.cryptowsclient.common.ApiRequestJson;
+import org.example.cryptowsclient.common.ApplicationProperties;
+import org.example.cryptowsclient.orderhistory.dto.UserOrderResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import static org.example.cryptowsclient.auth.SigningUtil.signAndParseToJsonString;
 
 @Component
-public class CryptoWebSocketClient {
+public class UserWebSocketClient {
 
-    private static final String WS_URL = "wss://stream.crypto.com/exchange/v1/market";
+    private static final String WS_URL = "wss://stream.crypto.com/exchange/v1/user";
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -24,27 +30,22 @@ public class CryptoWebSocketClient {
     private Disposable activeConnection;
     private String lastSubscribedChannel;
 
-    public CryptoWebSocketClient(SimpMessagingTemplate messagingTemplate) {
+    public UserWebSocketClient(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void connect(String subscribeMessage, String channelName) {
-        // 1️⃣ Unsubscribe from the previous channel if active
-        if (activeConnection != null && !activeConnection.isDisposed()) {
-            activeConnection.dispose();
-            System.out.println("Previous WebSocket connection closed");
-        }
-
+    public void connect(List<String> initialMessages, String channelName) {
         ReactorNettyWebSocketClient client = new ReactorNettyWebSocketClient();
-
-        // 2️⃣ Store last channel for potential unsubscribe
         lastSubscribedChannel = channelName;
 
-        // 3️⃣ Create new WebSocket connection
         activeConnection = client.execute(
                 URI.create(WS_URL),
                 session -> {
-                    Mono<Void> sendSubscription = session.send(Mono.just(session.textMessage(subscribeMessage)));
+                    // Send all initial messages (auth, then subscribe)
+                    Mono<Void> sendMessages = session.send(
+                            Flux.fromIterable(initialMessages)
+                                    .map(session::textMessage)
+                    );
 
                     Mono<Void> receive = session.receive()
                             .map(msg -> msg.getPayloadAsText())
@@ -53,14 +54,11 @@ public class CryptoWebSocketClient {
                             .doOnTerminate(() -> System.out.println("WebSocket connection terminated"))
                             .then();
 
-                    return sendSubscription.then(receive);
+                    return sendMessages.then(receive);
                 }
-        ).subscribe(
-                null,
-                error -> System.err.println("Connection failed: " + error.getMessage()),
-                () -> System.out.println("Connection closed cleanly")
-        );
+        ).subscribe();
     }
+
 
     private Mono<Void> handleMessage(org.springframework.web.reactive.socket.WebSocketSession session, String payload) {
         try {
@@ -73,9 +71,16 @@ public class CryptoWebSocketClient {
                         .build();
                 return session.send(Mono.just(session.textMessage(heartbeatResponse.toJson()))).then(Mono.empty());
             }
-
+            if (payload.contains("\"code\":\"40101\"")) {
+                ApiRequestJson authWsRequest = ApiRequestJson.builder()
+                        .id(1L)
+                        .method("public/auth")
+                        .build();
+                String requestBody = signAndParseToJsonString(authWsRequest, ApplicationProperties.getApiSecret());
+                return session.send(Mono.just(session.textMessage(requestBody))).then(Mono.empty());
+            }
             // Handle book data
-            BookDataMessage parsed = objectMapper.readValue(payload, BookDataMessage.class);
+            UserOrderResponse parsed = objectMapper.readValue(payload, UserOrderResponse.class);
             String formatted = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             System.out.println("[" + formatted + "] Parsed DTO:\n" + parsed);
 

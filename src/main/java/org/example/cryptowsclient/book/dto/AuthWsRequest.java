@@ -1,10 +1,12 @@
-package org.example.cryptowsclient.common;
+package org.example.cryptowsclient.book.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Collections;
 import java.util.Map;
@@ -13,7 +15,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiRequestJson {
+public class AuthWsRequest {
     private Long id;
     private String method;
     @Builder.Default
@@ -22,4 +24,5 @@ public class ApiRequestJson {
     @JsonProperty("api_key")
     private String apiKey;
     private Long nonce;
+
 }

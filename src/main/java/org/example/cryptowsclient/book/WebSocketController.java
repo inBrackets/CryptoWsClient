@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/ws")
 public class WebSocketController {
 
-    private final CryptoWebSocketClient client;
+    private final MarketWebSocketClient client;
 
-    public WebSocketController(CryptoWebSocketClient client) {
+    public WebSocketController(MarketWebSocketClient client) {
         this.client = client;
     }
 
