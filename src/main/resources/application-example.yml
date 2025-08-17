@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: CryptoWsClient
+api:
+  key: SAMPLE_API_KEY
+  secret: SAMPLE_API_SECRET
