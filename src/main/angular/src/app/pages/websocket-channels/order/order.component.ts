@@ -2,7 +2,6 @@ import {Component, inject, OnInit} from '@angular/core';
 import {OrderWebsocketClientService} from './services/order-websocket-client.service';
 import {DatePipe, JsonPipe, NgClass} from '@angular/common';
 import {UserOrderMessage} from './model/dto';
-import {OrderHistoryItem} from '../../rest-channels/order-history/model/dto';
 
 @Component({
   selector: 'app-order',
