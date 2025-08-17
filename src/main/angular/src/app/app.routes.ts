@@ -5,6 +5,7 @@ import { Routes } from '@angular/router';
 import {MiscComponent} from './pages/misc/misc.component';
 import {BookComponent} from './pages/websocket-channels/book/components/book.component';
 import {OrderHistoryComponent} from './pages/rest-channels/order-history/order-history.component';
+import {OrderComponent} from './pages/websocket-channels/order/order.component';
 
 export const routes: Routes = [
   {
@@ -15,6 +16,7 @@ export const routes: Routes = [
       {
         path: 'ws/book', component: BookComponent,
       },
+      { path: 'ws/order', component: OrderComponent },
       {
         path: 'order-history', component: OrderHistoryComponent,
       }

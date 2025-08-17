@@ -1,0 +1,30 @@
+<p>order works!</p>
+<b>order: </b><p>{{ currentOrder | json }}</p>
+<table class="table table-hover">
+  <thead>
+  <tr>
+    <th scope="col">ID</th>
+    <th scope="col">INSTRUMENT NAME</th>
+    <th scope="col">ORDER TYPE</th>
+    <th scope="col">SIDE</th>
+    <th scope="col">QUANTITY</th>
+    <th scope="col">AVG PRICE/LIMIT PRICE</th>
+    <th scope="col">TIME (CREATED/UPDATED)</th>
+    <th scope="col">STATUS</th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (userOrderRow of lastUserOrders; track lastUserOrders) {
+      <tr>
+        <th scope="row">{{userOrderRow.result.data[0].order_id}}</th>
+        <td>{{userOrderRow.result.data[0].instrument_name}}</td>
+        <td>{{userOrderRow.result.data[0].order_type}}</td>
+        <td>{{userOrderRow.result.data[0].side}}</td>
+        <td>{{userOrderRow.result.data[0].cumulative_quantity}}/{{userOrderRow.result.data[0].quantity}}</td>
+        <td>{{userOrderRow.result.data[0].avg_price}}/{{userOrderRow.result.data[0].limit_price}}</td>
+        <td>{{userOrderRow.result.data[0].create_time | date:'yyyy-MM-dd HH:mm:ss'}} / {{userOrderRow.result.data[0].update_time | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+        <td>{{userOrderRow.result.data[0].status}}</td>
+      </tr>
+    }
+  </tbody>
+</table>
