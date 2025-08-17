@@ -10,10 +10,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderResultDto<T> {
+public class OrderResultDto<Data> {
 
     @JsonProperty("data")
-    private List<T> data;
+    private List<Data> data;
 
     // specific for WS
     private String subscription;

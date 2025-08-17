@@ -61,7 +61,7 @@ public class OrderItemDto {
     @JsonProperty("ref_price")
     private String refPrice;
 
-    // REST SPECIFIC
+    // REST SPECIFIC private/get-order-history
     @JsonProperty("ref_price_type")
     private String refPriceType;
 
@@ -101,7 +101,7 @@ public class OrderItemDto {
     @JsonProperty("fee_instrument_name")
     private String feeInstrumentName;
 
-    // REST SPECIFIC
+    // REST SPECIFIC private/get-order-history
     @JsonProperty("reason")
     private String reason;
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum ExecInst {
     POST_ONLY,
-    SMART_POST_ONLY, // REST SPECIFIC
+    SMART_POST_ONLY, // REST SPECIFIC private/get-order-history
     LIQUIDATION;
 
     @JsonCreator
