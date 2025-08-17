@@ -2,7 +2,7 @@ package org.example.cryptowsclient.orderhistory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.cryptowsclient.book.dto.Heartbeat;
-import org.example.cryptowsclient.orderhistory.dto.UserOrderResponse;
+import org.example.cryptowsclient.orderhistory.dto.ws.UserOrderResponse;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;

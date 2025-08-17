@@ -1,9 +1,13 @@
-package org.example.cryptowsclient.orderhistory.dto;
+package org.example.cryptowsclient.orderhistory.dto.rest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.*;
+import org.example.cryptowsclient.orderhistory.dto.ws.ExecInst;
+import org.example.cryptowsclient.orderhistory.dto.ws.OrderStatus;
+import org.example.cryptowsclient.orderhistory.dto.ws.Side;
+import org.example.cryptowsclient.orderhistory.dto.ws.TimeInForce;
 
 import java.util.List;
 
@@ -107,75 +111,6 @@ public class OrderItemDto {
         @JsonCreator
         public static OrderType fromValue(String value) {
             return OrderType.valueOf(value.toUpperCase());
-        }
-
-        @JsonValue
-        public String toValue() {
-            return this.name();
-        }
-    }
-
-    @Getter
-    public enum TimeInForce {
-        GOOD_TILL_CANCEL,
-        IMMEDIATE_OR_CANCEL,
-        FILL_OR_KILL;
-
-        @JsonCreator
-        public static TimeInForce fromValue(String value) {
-            return TimeInForce.valueOf(value.toUpperCase());
-        }
-
-        @JsonValue
-        public String toValue() {
-            return this.name();
-        }
-    }
-
-    @Getter
-    public enum Side {
-        BUY, SELL;
-
-        @JsonCreator
-        public static Side fromValue(String value) {
-            return Side.valueOf(value.toUpperCase());
-        }
-
-        @JsonValue
-        public String toValue() {
-            return this.name();
-        }
-    }
-
-    @Getter
-    public enum ExecInst {
-        POST_ONLY,
-        LIQUIDATION;
-
-        @JsonCreator
-        public static ExecInst fromValue(String value) {
-            return ExecInst.valueOf(value.toUpperCase());
-        }
-
-        @JsonValue
-        public String toValue() {
-            return this.name();
-        }
-    }
-
-    @Getter
-    public enum OrderStatus {
-        NEW,
-        PENDING,
-        REJECTED,
-        ACTIVE,
-        CANCELED,
-        FILLED,
-        EXPIRED;
-
-        @JsonCreator
-        public static OrderStatus fromValue(String value) {
-            return OrderStatus.valueOf(value.toUpperCase());
         }
 
         @JsonValue

@@ -1,4 +1,4 @@
-package org.example.cryptowsclient.orderhistory.dto;
+package org.example.cryptowsclient.orderhistory.dto.rest;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
