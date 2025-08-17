@@ -19,7 +19,6 @@ import static org.example.cryptowsclient.auth.SigningUtil.signAndParseToJsonStri
 public class OrderWebSocketRunner implements CommandLineRunner {
 
     private final UserWebSocketClient client;
-    private final RestTemplate restTemplate = new RestTemplate();
 
     public OrderWebSocketRunner(UserWebSocketClient client) {
         this.client = client;
@@ -41,9 +40,10 @@ public class OrderWebSocketRunner implements CommandLineRunner {
                 .params(Map.of("channels", List.of("user.order")))
                 .build();
 
+        // The non-auth ws message should not have any nonce, signature, api key or api secret
         String subscribeMessage = new ObjectMapper().writeValueAsString(subscribeRequest);
 
-        client.connect(List.of(authMessage, subscribeMessage), "user.order");
+        client.connect(List.of(authMessage, subscribeMessage), "/topic/user.order");
     }
 
 }
