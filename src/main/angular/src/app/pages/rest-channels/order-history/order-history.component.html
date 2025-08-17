@@ -13,7 +13,12 @@
   </thead>
   <tbody>
     @for (orderHistoryRow of orderHistory; track orderHistory) {
-      <tr>
+      <tr [ngClass]="{
+      'table-success': orderHistoryRow.side === 'BUY'
+                      && orderHistoryRow.status === 'FILLED',
+      'table-danger': orderHistoryRow.side === 'SELL'
+                       && orderHistoryRow.status === 'FILLED'
+    }">
         <th scope="row">{{orderHistoryRow.order_id}}</th>
         <td>{{orderHistoryRow.order_date}}</td>
         <td>{{orderHistoryRow.order_type}}</td>
