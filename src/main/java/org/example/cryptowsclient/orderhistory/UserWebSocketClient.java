@@ -2,7 +2,9 @@ package org.example.cryptowsclient.orderhistory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.cryptowsclient.book.dto.Heartbeat;
-import org.example.cryptowsclient.orderhistory.dto.ws.UserOrderResponse;
+import org.example.cryptowsclient.orderhistory.dto.OrderResponseDto;
+import org.example.cryptowsclient.orderhistory.dto.OrderResultDto;
+import org.example.cryptowsclient.orderhistory.dto.OrderItemDto;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
@@ -72,7 +74,7 @@ public class UserWebSocketClient {
 //                return session.send(Mono.just(session.textMessage(requestBody))).then(Mono.empty());
 //            }
             // Handle book data
-            UserOrderResponse parsed = objectMapper.readValue(payload, UserOrderResponse.class);
+            OrderResponseDto<OrderResultDto<OrderItemDto>> parsed = objectMapper.readValue(payload, OrderResponseDto.class);
             String formatted = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             System.out.println("[" + formatted + "] Parsed DTO:\n" + parsed);
 

@@ -1,13 +1,15 @@
-package org.example.cryptowsclient.orderhistory.dto.rest;
+package org.example.cryptowsclient.orderhistory.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.*;
-import org.example.cryptowsclient.orderhistory.dto.ws.ExecInst;
-import org.example.cryptowsclient.orderhistory.dto.ws.OrderStatus;
-import org.example.cryptowsclient.orderhistory.dto.ws.Side;
-import org.example.cryptowsclient.orderhistory.dto.ws.TimeInForce;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.example.cryptowsclient.orderhistory.dto.enums.ExecInst;
+import org.example.cryptowsclient.orderhistory.dto.enums.OrderStatus;
+import org.example.cryptowsclient.orderhistory.dto.enums.OrderType;
+import org.example.cryptowsclient.orderhistory.dto.enums.Side;
+import org.example.cryptowsclient.orderhistory.dto.enums.TimeInForce;
 
 import java.util.List;
 
@@ -59,9 +61,9 @@ public class OrderItemDto {
     @JsonProperty("ref_price")
     private String refPrice;
 
+    // REST SPECIFIC
     @JsonProperty("ref_price_type")
     private String refPriceType;
-
 
     @JsonProperty("cumulative_quantity")
     private String cumulativeQuantity;
@@ -99,23 +101,7 @@ public class OrderItemDto {
     @JsonProperty("fee_instrument_name")
     private String feeInstrumentName;
 
+    // REST SPECIFIC
     @JsonProperty("reason")
     private String reason;
-
-    // ==== ENUMS ====
-
-    @Getter
-    public enum OrderType {
-        MARKET, LIMIT, STOP_LOSS, STOP_LIMIT, TAKE_PROFIT, TAKE_PROFIT_LIMIT;
-
-        @JsonCreator
-        public static OrderType fromValue(String value) {
-            return OrderType.valueOf(value.toUpperCase());
-        }
-
-        @JsonValue
-        public String toValue() {
-            return this.name();
-        }
-    }
 }

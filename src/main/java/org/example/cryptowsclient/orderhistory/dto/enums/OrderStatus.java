@@ -1,4 +1,4 @@
-package org.example.cryptowsclient.orderhistory.dto.ws;
+package org.example.cryptowsclient.orderhistory.dto.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -6,10 +6,10 @@ import lombok.Getter;
 
 @Getter
 public enum OrderStatus {
-    NEW,
-    PENDING,
+    NEW, // WS SPECIFIC (user.order.{instrument_name})
+    PENDING, // WS SPECIFIC (user.order.{instrument_name})
     REJECTED,
-    ACTIVE,
+    ACTIVE, // WS SPECIFIC (user.order.{instrument_name})
     CANCELED,
     FILLED,
     EXPIRED;

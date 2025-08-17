@@ -1,4 +1,4 @@
-package org.example.cryptowsclient.orderhistory.dto.ws;
+package org.example.cryptowsclient.orderhistory.dto.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -6,7 +6,8 @@ import lombok.Getter;
 
 @Getter
 public enum Side {
-    BUY, SELL;
+    BUY,
+    SELL;
 
     @JsonCreator
     public static Side fromValue(String value) {

@@ -1,23 +1,24 @@
-package org.example.cryptowsclient.orderhistory.dto.ws;
+package org.example.cryptowsclient.orderhistory.dto;
+
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Result {
+public class OrderResultDto<T> {
+
+    @JsonProperty("data")
+    private List<T> data;
+
+    // specific for WS
     private String subscription;
     private String channel;
-
     @JsonProperty("instrument_name")
     private String instrumentName;
 
-    private List<OrderData> data;
 }

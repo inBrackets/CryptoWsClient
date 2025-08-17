@@ -1,4 +1,4 @@
-package org.example.cryptowsclient.orderhistory.dto.rest;
+package org.example.cryptowsclient.orderhistory.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseDto<Result> {
+public class OrderResponseDto<Result> {
 
     @JsonProperty("id")
     private Integer id;

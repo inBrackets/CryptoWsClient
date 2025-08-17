@@ -5,9 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.cryptowsclient.common.ApiRequestJson;
 import org.example.cryptowsclient.common.ApplicationProperties;
-import org.example.cryptowsclient.orderhistory.dto.rest.OrderItemDto;
-import org.example.cryptowsclient.orderhistory.dto.rest.ResponseDto;
-import org.example.cryptowsclient.orderhistory.dto.rest.ResultDto;
+import org.example.cryptowsclient.orderhistory.dto.OrderItemDto;
+import org.example.cryptowsclient.orderhistory.dto.OrderResponseDto;
+import org.example.cryptowsclient.orderhistory.dto.OrderResultDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -29,7 +29,7 @@ public class OrderHistoryController {
 
     @GetMapping("/private/get-order-history")
     @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
-    public ResponseEntity<ResponseDto<ResultDto<OrderItemDto>>> forwardRequest() {
+    public ResponseEntity<OrderResponseDto<OrderResultDto<OrderItemDto>>> forwardRequest() {
         String targetUrl = "https://api.crypto.com/exchange/v1/private/get-order-history";
 
         ApiRequestJson request = ApiRequestJson.builder()
@@ -60,7 +60,7 @@ public class OrderHistoryController {
 
         ObjectMapper objectMapper = new ObjectMapper();
         // Deserialize JSON into your DTO
-        ResponseDto<ResultDto<OrderItemDto>> dto;
+        OrderResponseDto<OrderResultDto<OrderItemDto>> dto;
         try {
             dto = objectMapper.readValue(
                     response.getBody(),
