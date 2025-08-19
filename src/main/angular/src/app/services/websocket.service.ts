@@ -3,6 +3,7 @@ import SockJS from 'sockjs-client';
 import { Client, IMessage } from '@stomp/stompjs';
 import { Subject } from 'rxjs';
 import {Orderbook} from '../dto/interfaces';
+import {environment} from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class WebsocketService {
   readonly foodTopic = "/topic/random.food";
   readonly animalTopic = "/topic/random.animal";
   readonly orderBookTopic = "/topic/book";
-  readonly websocketEndpoint = "http://localhost:8080/ws";
+  readonly websocketEndpoint = `http://localhost:${environment.springBootPort}/ws`;
 
   // Subject to push timestamp updates
   timestamp$ = new Subject<string>();

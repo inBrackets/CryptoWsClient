@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Client, IMessage} from '@stomp/stompjs';
 import {Subject} from 'rxjs';
-import {Orderbook} from '../../book/model/dto';
 import SockJS from 'sockjs-client';
 import {UserOrderMessage} from '../model/dto';
+import {environment} from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class OrderWebsocketClientService {
   private stompClient!: Client; // Modern STOMP client
 
   readonly orderTopic = "/topic/user.order";
-  readonly websocketEndpoint = "http://localhost:8080/ws";
+  readonly websocketEndpoint = `http://localhost:${environment.springBootPort}/ws`;
 
   order$ = new Subject<UserOrderMessage>();
 

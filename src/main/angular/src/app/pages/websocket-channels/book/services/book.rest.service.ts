@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
+import {environment} from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookRestService {
 
-  private backendUrl = 'http://localhost:8080/api/ws/connect';
+  private backendUrl = `http://localhost:${environment.springBootPort}/api/ws/connect`;
 
   constructor(private http: HttpClient) {}
 

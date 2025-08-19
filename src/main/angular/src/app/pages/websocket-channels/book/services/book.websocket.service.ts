@@ -3,6 +3,7 @@ import {Client, IMessage} from '@stomp/stompjs';
 import {Subject} from 'rxjs';
 import SockJS from 'sockjs-client';
 import {Orderbook} from '../model/dto';
+import {environment} from '../../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class BookWebsocketService {
   private stompClient!: Client; // Modern STOMP client
 
   readonly orderBookTopic = "/topic/book";
-  readonly websocketEndpoint = "http://localhost:8080/ws";
+  readonly websocketEndpoint = `http://localhost:${environment.springBootPort}/ws`;
 
   orderbook$ = new Subject<Orderbook>();
 
