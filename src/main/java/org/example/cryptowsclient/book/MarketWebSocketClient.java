@@ -7,9 +7,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
 import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -20,8 +22,8 @@ public class MarketWebSocketClient {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final SimpMessagingTemplate messagingTemplate;
 
-    // Track active connection
     private Disposable activeConnection;
+    private String lastSubscribeMessage;
     private String lastSubscribedChannel;
 
     public MarketWebSocketClient(SimpMessagingTemplate messagingTemplate) {
@@ -29,52 +31,68 @@ public class MarketWebSocketClient {
     }
 
     public void connect(String subscribeMessage, String channelName) {
-        // 1️⃣ Unsubscribe from the previous channel if active
+        // close old connection if still alive
         if (activeConnection != null && !activeConnection.isDisposed()) {
             activeConnection.dispose();
             System.out.println("Previous WebSocket connection closed");
         }
 
+        this.lastSubscribeMessage = subscribeMessage;
+        this.lastSubscribedChannel = channelName;
+
         ReactorNettyWebSocketClient client = new ReactorNettyWebSocketClient();
 
-        // 2️⃣ Store last channel for potential unsubscribe
-        lastSubscribedChannel = channelName;
-
-        // 3️⃣ Create new WebSocket connection
         activeConnection = client.execute(
                 URI.create(WS_URL),
                 session -> {
-                    Mono<Void> sendSubscription = session.send(Mono.just(session.textMessage(subscribeMessage)));
+                    // send initial subscription
+                    Mono<Void> sendSubscription =
+                            session.send(Mono.just(session.textMessage(subscribeMessage)));
 
-                    Mono<Void> receive = session.receive()
+                    // receive stream
+                    Flux<Void> receive = session.receive()
                             .map(msg -> msg.getPayloadAsText())
                             .flatMap(payload -> handleMessage(session, payload))
                             .doOnError(err -> System.err.println("WebSocket error: " + err.getMessage()))
                             .doOnTerminate(() -> System.out.println("WebSocket connection terminated"))
-                            .then();
+                            .thenMany(Mono.empty());
 
-                    return sendSubscription.then(receive);
+                    // scheduled keep-alive every 15s
+                    Flux<Void> keepAlive = Flux.interval(Duration.ofSeconds(15))
+                            .flatMap(tick -> {
+                                String heartbeat = "{\"id\":" + tick + ",\"method\":\"public/respond-heartbeat\"}";
+                                return session.send(Mono.just(session.textMessage(heartbeat)));
+                            })
+                            .thenMany(Mono.empty());
+
+                    return sendSubscription.thenMany(Flux.merge(receive, keepAlive)).then();
                 }
         ).subscribe(
                 null,
-                error -> System.err.println("Connection failed: " + error.getMessage()),
-                () -> System.out.println("Connection closed cleanly")
+                error -> {
+                    System.err.println("Connection failed: " + error.getMessage());
+                    scheduleReconnect();
+                },
+                () -> {
+                    System.out.println("Connection closed cleanly");
+                    scheduleReconnect();
+                }
         );
     }
 
     private Mono<Void> handleMessage(org.springframework.web.reactive.socket.WebSocketSession session, String payload) {
         try {
-            // Handle heartbeat
+            // handle heartbeat
             if (payload.contains("\"method\":\"public/heartbeat\"")) {
                 Heartbeat parsed = objectMapper.readValue(payload, Heartbeat.class);
                 Heartbeat heartbeatResponse = Heartbeat.builder()
                         .id(parsed.getId())
                         .method("public/respond-heartbeat")
                         .build();
-                return session.send(Mono.just(session.textMessage(heartbeatResponse.toJson()))).then(Mono.empty());
+                return session.send(Mono.just(session.textMessage(heartbeatResponse.toJson()))).then();
             }
 
-            // Handle book data
+            // handle book data
             BookDataMessage parsed = objectMapper.readValue(payload, BookDataMessage.class);
             String formatted = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             System.out.println("[" + formatted + "] Parsed DTO:\n" + parsed);
@@ -86,5 +104,13 @@ public class MarketWebSocketClient {
             e.printStackTrace();
         }
         return Mono.empty();
+    }
+
+    private void scheduleReconnect() {
+        // wait 5 seconds before reconnecting
+        Mono.delay(Duration.ofSeconds(5)).subscribe(t -> {
+            System.out.println("Reconnecting to " + lastSubscribedChannel + "...");
+            connect(lastSubscribeMessage, lastSubscribedChannel);
+        });
     }
 }
