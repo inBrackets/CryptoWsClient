@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class InstrumentService {
@@ -26,13 +27,13 @@ public class InstrumentService {
 
     public void syncInstruments() {
 
-        ApiResponseDto<ApiResultDto<InstrumentItemDto>> body = getAllInstruments().getBody();
+        ApiResponseDto<ApiResultDto<InstrumentItemDto>> body = getAllInstrumentsFromExternalExchange().getBody();
 
         if (body != null && body.getResult() != null && body.getResult().getData() != null) {
             List<InstrumentItemDto> instruments = body.getResult().getData();
 
             List<InstrumentEntity> entities = instruments.stream()
-                    .map(instrumentMapper::toDto)
+                    .map(instrumentMapper::toEntity)
                     .toList();
 
             instrumentRepository.saveAll(entities);
@@ -40,12 +41,18 @@ public class InstrumentService {
         }
     }
 
-    public ResponseEntity<ApiResponseDto<ApiResultDto<InstrumentItemDto>>> getAllInstruments() {
+    private ResponseEntity<ApiResponseDto<ApiResultDto<InstrumentItemDto>>> getAllInstrumentsFromExternalExchange() {
         String url = "https://api.crypto.com/exchange/v1/public/get-instruments";
         ParameterizedTypeReference<ApiResponseDto<ApiResultDto<InstrumentItemDto>>> typeRef =
                 new ParameterizedTypeReference<>() {};
 
                 return restTemplate.exchange(url, HttpMethod.GET, null, typeRef);
+    }
+
+    public List<InstrumentItemDto> getAllInstruments() {
+        return instrumentRepository.findAll().stream()
+                .map(instrumentMapper::toDto)
+                .collect(Collectors.toList());
     }
 
 }
