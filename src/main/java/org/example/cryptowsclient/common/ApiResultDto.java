@@ -22,6 +22,8 @@ public class ApiResultDto<GenericData> {
     private String subscription;
     private String channel;
     @JsonProperty("instrument_name")
-    private String instrumentName;
+    private String instrumentName; // candlestick
+
+    private String interval; // candlestick
 
 }

@@ -1,5 +1,6 @@
 package org.example.cryptowsclient.instrument;
 
+import lombok.AllArgsConstructor;
 import org.example.cryptowsclient.common.ApiResponseDto;
 import org.example.cryptowsclient.common.ApiResultDto;
 import org.springframework.core.ParameterizedTypeReference;
@@ -12,18 +13,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class InstrumentService {
 
-    private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate = new RestTemplate();
     private final InstrumentRepository instrumentRepository;
     private final InstrumentMapper instrumentMapper;
-
-    public InstrumentService(InstrumentRepository instrumentRepository,
-                             InstrumentMapper instrumentMapper) {
-        this.restTemplate = new RestTemplate();
-        this.instrumentRepository = instrumentRepository;
-        this.instrumentMapper = instrumentMapper;
-    }
 
     public void syncInstruments() {
 
