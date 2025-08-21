@@ -1,4 +1,4 @@
-package org.example.cryptowsclient.orderhistory.dto;
+package org.example.cryptowsclient.common;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,7 +10,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderResultDto<GenericData> {
+public class ApiResultDto<GenericData> {
 
     @JsonProperty("data")
     private List<GenericData> data;
