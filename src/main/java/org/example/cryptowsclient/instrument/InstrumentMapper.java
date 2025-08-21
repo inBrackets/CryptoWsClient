@@ -5,7 +5,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 interface InstrumentMapper {
 
-    InstrumentEntity toEntity(InstrumentItemDto dto);
+    InstrumentEntity toEntity(InstrumentDto dto);
 
-    InstrumentItemDto toDto(InstrumentEntity entity);
+    InstrumentDto toDto(InstrumentEntity entity);
 }

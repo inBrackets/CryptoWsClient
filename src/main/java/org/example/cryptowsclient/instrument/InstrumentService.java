@@ -27,10 +27,10 @@ public class InstrumentService {
 
     public void syncInstruments() {
 
-        ApiResponseDto<ApiResultDto<InstrumentItemDto>> body = getAllInstrumentsFromExternalExchange().getBody();
+        ApiResponseDto<ApiResultDto<InstrumentDto>> body = getAllInstrumentsFromExternalExchange().getBody();
 
         if (body != null && body.getResult() != null && body.getResult().getData() != null) {
-            List<InstrumentItemDto> instruments = body.getResult().getData();
+            List<InstrumentDto> instruments = body.getResult().getData();
 
             List<InstrumentEntity> entities = instruments.stream()
                     .map(instrumentMapper::toEntity)
@@ -41,15 +41,15 @@ public class InstrumentService {
         }
     }
 
-    private ResponseEntity<ApiResponseDto<ApiResultDto<InstrumentItemDto>>> getAllInstrumentsFromExternalExchange() {
+    private ResponseEntity<ApiResponseDto<ApiResultDto<InstrumentDto>>> getAllInstrumentsFromExternalExchange() {
         String url = "https://api.crypto.com/exchange/v1/public/get-instruments";
-        ParameterizedTypeReference<ApiResponseDto<ApiResultDto<InstrumentItemDto>>> typeRef =
+        ParameterizedTypeReference<ApiResponseDto<ApiResultDto<InstrumentDto>>> typeRef =
                 new ParameterizedTypeReference<>() {};
 
                 return restTemplate.exchange(url, HttpMethod.GET, null, typeRef);
     }
 
-    public List<InstrumentItemDto> getAllInstruments() {
+    public List<InstrumentDto> getAllInstruments() {
         return instrumentRepository.findAll().stream()
                 .map(instrumentMapper::toDto)
                 .collect(Collectors.toList());

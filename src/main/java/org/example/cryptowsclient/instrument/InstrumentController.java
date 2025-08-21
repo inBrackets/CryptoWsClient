@@ -19,7 +19,7 @@ public class InstrumentController {
 
     @GetMapping("/get-all")
     @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
-    private ResponseEntity<List<InstrumentItemDto>> getAll() {
+    private ResponseEntity<List<InstrumentDto>> getAll() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(instrumentService.getAllInstruments());

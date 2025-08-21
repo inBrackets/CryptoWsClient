@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InstrumentItemDto {
+public class InstrumentDto {
 
     @JsonProperty("symbol")
     private String symbol;
