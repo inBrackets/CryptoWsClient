@@ -15,10 +15,13 @@ public class InstrumentService {
 
     private final RestTemplate restTemplate;
     private final InstrumentRepository instrumentRepository;
+    private final InstrumentMapper instrumentMapper;
 
-    public InstrumentService(InstrumentRepository instrumentRepository) {
+    public InstrumentService(InstrumentRepository instrumentRepository,
+                             InstrumentMapper instrumentMapper) {
         this.restTemplate = new RestTemplate();
         this.instrumentRepository = instrumentRepository;
+        this.instrumentMapper = instrumentMapper;
     }
 
     public void syncInstruments() {
@@ -35,35 +38,13 @@ public class InstrumentService {
             List<InstrumentItemDto> instruments = body.getResult().getData();
 
             List<InstrumentEntity> entities = instruments.stream()
-                    .map(this::mapToEntity)
+                    .map(instrumentMapper::toDto)
                     .toList();
 
             instrumentRepository.saveAll(entities);
             System.out.println("✅ Saved " + entities.size() + " instruments to DB");
         }
 
-    }
-
-    private InstrumentEntity mapToEntity(InstrumentItemDto dto) {
-        InstrumentEntity entity = new InstrumentEntity();
-        entity.setSymbol(dto.getSymbol());
-        entity.setInstType(dto.getInstType());
-        entity.setDisplayName(dto.getDisplayName());
-        entity.setBaseCurrency(dto.getBaseCurrency());
-        entity.setQuoteCurrency(dto.getQuoteCurrency());
-        entity.setQuoteDecimals(dto.getQuoteDecimals());
-        entity.setQuantityDecimals(dto.getQuantityDecimals());
-        entity.setPriceTickSize(dto.getPriceTickSize());
-        entity.setQuantityTickSize(dto.getQuantityTickSize());
-        entity.setMaxLeverage(dto.getMaxLeverage());
-        entity.setTradable(dto.isTradable());
-        entity.setExpiryTimestampMs(dto.getExpiryTimestampMs());
-        entity.setBetaProduct(dto.isBetaProduct());
-        entity.setUnderlyingSymbol(dto.getUnderlyingSymbol());
-        entity.setContractSize(dto.getContract_size());
-        entity.setMarginBuyEnabled(dto.isMarginBuyEnabled());
-        entity.setMarginSellEnabled(dto.isMarginSellEnabled());
-        return entity;
     }
 
 }
