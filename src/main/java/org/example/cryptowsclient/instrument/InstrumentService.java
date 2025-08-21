@@ -25,14 +25,8 @@ public class InstrumentService {
     }
 
     public void syncInstruments() {
-        String url = "https://api.crypto.com/exchange/v1/public/get-instruments";
-        ParameterizedTypeReference<ApiResponseDto<ApiResultDto<InstrumentItemDto>>> typeRef =
-                new ParameterizedTypeReference<>() {};
 
-        ResponseEntity<ApiResponseDto<ApiResultDto<InstrumentItemDto>>> response =
-                restTemplate.exchange(url, HttpMethod.GET, null, typeRef);
-
-        ApiResponseDto<ApiResultDto<InstrumentItemDto>> body = response.getBody();
+        ApiResponseDto<ApiResultDto<InstrumentItemDto>> body = getAllInstruments().getBody();
 
         if (body != null && body.getResult() != null && body.getResult().getData() != null) {
             List<InstrumentItemDto> instruments = body.getResult().getData();
@@ -44,7 +38,14 @@ public class InstrumentService {
             instrumentRepository.saveAll(entities);
             System.out.println("✅ Saved " + entities.size() + " instruments to DB");
         }
+    }
 
+    public ResponseEntity<ApiResponseDto<ApiResultDto<InstrumentItemDto>>> getAllInstruments() {
+        String url = "https://api.crypto.com/exchange/v1/public/get-instruments";
+        ParameterizedTypeReference<ApiResponseDto<ApiResultDto<InstrumentItemDto>>> typeRef =
+                new ParameterizedTypeReference<>() {};
+
+                return restTemplate.exchange(url, HttpMethod.GET, null, typeRef);
     }
 
 }
