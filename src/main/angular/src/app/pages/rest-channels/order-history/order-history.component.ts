@@ -1,7 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {OrderHistoryService} from './service/order-history.service';
 import {ApiResponse, OrderHistoryItem, OrderHistoryResult} from './model/dto';
-import {Observable} from 'rxjs';
 import {NgClass} from '@angular/common';
 
 @Component({

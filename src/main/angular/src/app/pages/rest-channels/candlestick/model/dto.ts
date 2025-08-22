@@ -1,0 +1,8 @@
+export interface Candlestick {
+  o: number;
+  h: number;
+  l: number;
+  c: number;
+  v: number;
+  t: number;
+}
