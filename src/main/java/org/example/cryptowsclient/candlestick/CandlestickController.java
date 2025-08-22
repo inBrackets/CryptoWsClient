@@ -22,6 +22,6 @@ public class CandlestickController {
     private ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> getAll(
             @RequestParam(value = "instrument_name", required = false, defaultValue = "BTC_USD") String instrumentName
     ) {
-        return candlestickService.getAllInstrumentsFromExternalExchange(instrumentName);
+        return candlestickService.getCandlesticksByInstrumentName(instrumentName);
     }
 }

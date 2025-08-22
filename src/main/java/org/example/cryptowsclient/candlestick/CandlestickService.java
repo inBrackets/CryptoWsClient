@@ -17,7 +17,7 @@ public class CandlestickService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> getAllInstrumentsFromExternalExchange(
+    public ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> getCandlesticksByInstrumentName(
             String instrumentName
     ) {
         String url = format("https://api.crypto.com/exchange/v1//public/get-candlestick?instrument_name=%s&timeframe=M15&count=300", instrumentName);
