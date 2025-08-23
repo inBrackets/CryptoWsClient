@@ -1,14 +1,17 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {OrderHistoryService} from '../order-history/service/order-history.service';
-import {ApiResponse, OrderHistoryItem, OrderHistoryResult} from '../order-history/model/dto';
+import {ApiResponse} from '../order-history/model/dto';
 import {CandlestickRestService} from './services/candlestick.rest.service';
-import {Candlestick} from './model/dto';
+import {Candlestick, CandlestickResult} from './model/dto';
 import {JsonPipe} from '@angular/common';
+import {HighchartsChartComponent} from 'highcharts-angular';
+import * as Highcharts from 'highcharts/highstock';
+import {createCandlestickAndVolumeChartOptions} from './candlestick-and-volume-chart.config';
 
 @Component({
   selector: 'app-candlestick',
   imports: [
-    JsonPipe
+    JsonPipe,
+    HighchartsChartComponent,
   ],
   templateUrl: './candlestick.component.html',
   standalone: true,
@@ -16,12 +19,17 @@ import {JsonPipe} from '@angular/common';
 })
 export class CandlestickComponent implements OnInit {
 
+  Highcharts: typeof Highcharts = Highcharts;
+  updateFlag = false;
   candlestickSrv = inject(CandlestickRestService);
   candlesticks: Candlestick[] = [];
+  chartOptions: Highcharts.Options = {}
 
   ngOnInit(): void {
-    this.candlestickSrv.getCandlesticks().subscribe((orderHistory: Candlestick[]) => {
-      this.candlesticks = orderHistory
+    this.candlestickSrv.getCandlesticks().subscribe((orderHistory: ApiResponse<CandlestickResult>) => {
+      this.candlesticks = orderHistory.result.data;
+      this.chartOptions = createCandlestickAndVolumeChartOptions(this.candlesticks);
+      this.updateFlag = true;
     })
   }
 }

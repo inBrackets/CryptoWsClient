@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -13,19 +15,19 @@ import lombok.NoArgsConstructor;
 public class CandlestickDto {
 
     @JsonProperty("o")
-    private String openPrice;
+    private BigDecimal openPrice;
 
     @JsonProperty("h")
-    private String highPrice;
+    private BigDecimal highPrice;
 
     @JsonProperty("l")
-    private String lowPrice;
+    private BigDecimal lowPrice;
 
     @JsonProperty("c")
-    private String closePrice;
+    private BigDecimal closePrice;
 
     @JsonProperty("v")
-    private String volume;
+    private BigDecimal volume;
 
     @JsonProperty("t")
     private long timestamp;
