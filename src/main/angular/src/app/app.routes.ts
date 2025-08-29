@@ -8,6 +8,9 @@ import {OrderHistoryComponent} from './pages/rest-channels/order-history/order-h
 import {OrderComponent} from './pages/websocket-channels/order/order.component';
 import {CandlestickComponent} from './pages/rest-channels/candlestick/candlestick.component';
 import {StockSingleLineSeriesComponent} from './highcharts/stock-single-line-series/stock-single-line-series.component';
+import {
+  StockIntradayCandlestickComponent
+} from './highcharts/stock-intraday-candlestick/stock-intraday-candlestick.component';
 
 export const routes: Routes = [
   {
@@ -23,6 +26,9 @@ export const routes: Routes = [
       },
       {
         path: 'stock-single-line-series', component: StockSingleLineSeriesComponent,
+      },
+      {
+        path: 'stock-intraday-candlestick-series', component: StockIntradayCandlestickComponent,
       },
       { path: 'ws/order', component: OrderComponent },
       {
