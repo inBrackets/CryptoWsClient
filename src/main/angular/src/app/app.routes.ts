@@ -7,6 +7,7 @@ import {BookComponent} from './pages/websocket-channels/book/components/book.com
 import {OrderHistoryComponent} from './pages/rest-channels/order-history/order-history.component';
 import {OrderComponent} from './pages/websocket-channels/order/order.component';
 import {CandlestickComponent} from './pages/rest-channels/candlestick/candlestick.component';
+import {StockSingleLineSeriesComponent} from './highcharts/stock-single-line-series/stock-single-line-series.component';
 
 export const routes: Routes = [
   {
@@ -19,6 +20,9 @@ export const routes: Routes = [
       },
       {
         path: 'candlestick', component: CandlestickComponent,
+      },
+      {
+        path: 'stock-single-line-series', component: StockSingleLineSeriesComponent,
       },
       { path: 'ws/order', component: OrderComponent },
       {

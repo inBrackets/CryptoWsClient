@@ -6,7 +6,9 @@ import {OrderbookResult} from '../../dto/interfaces';
 
 @Component({
   selector: 'app-misc',
-  imports: [RouterOutlet, LayoutComponent],
+  imports: [
+    // RouterOutlet, LayoutComponent
+  ],
   templateUrl: './misc.component.html',
   standalone: true,
   styleUrl: './misc.component.css'

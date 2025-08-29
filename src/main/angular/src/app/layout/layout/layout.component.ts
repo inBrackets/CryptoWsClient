@@ -5,8 +5,8 @@ import {Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/route
   selector: 'app-layout',
   imports: [
     RouterLink,
-    RouterOutlet,
-    RouterLinkActive
+    RouterOutlet
+//    RouterLinkActive
   ],
   templateUrl: './layout.component.html',
   standalone: true,
