@@ -55,7 +55,7 @@ export class CandlestickComponent implements OnInit {
         },
 
         series: [{
-          name: 'AAPL',
+          name: `${instrumntName}`,
           type: 'candlestick',
           data: this.stockData,
           tooltip: {
