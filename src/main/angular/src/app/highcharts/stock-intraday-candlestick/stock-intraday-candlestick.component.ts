@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ChartModule, StockChart} from 'angular-highcharts';
 
 @Component({
@@ -10,7 +10,7 @@ import {ChartModule, StockChart} from 'angular-highcharts';
   standalone: true,
   styleUrl: './stock-intraday-candlestick.component.css'
 })
-export class StockIntradayCandlestickComponent {
+export class StockIntradayCandlestickComponent implements OnInit{
   stock: StockChart = new StockChart();
 
   ngOnInit() {

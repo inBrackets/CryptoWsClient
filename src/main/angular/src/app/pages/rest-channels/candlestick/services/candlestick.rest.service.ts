@@ -13,7 +13,7 @@ export class CandlestickRestService {
 
   constructor(private http: HttpClient) { }
 
-  getCandlesticks(): Observable<ApiResponse<CandlestickResult>> {
-    return this.http.get<ApiResponse<CandlestickResult>>(`${this.apiUrl}/get-all?instrument_name=BTC_USD`)
+  getCandlesticks(instrumentName:string): Observable<ApiResponse<CandlestickResult>> {
+    return this.http.get<ApiResponse<CandlestickResult>>(`${this.apiUrl}/get-all?instrument_name=${instrumentName}`);
   }
 }

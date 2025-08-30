@@ -64,6 +64,7 @@ export class OrderBookLiveChartComponent implements OnInit {
             formatter: function () {
               const instrument = (this.axis.chart.userOptions as any).instrumentName || '';
               if ((this as any).pos === 0) return `Price (${instrument})`;
+              if (this.isLast) return 'Bids';
               return '';
             }
           }
