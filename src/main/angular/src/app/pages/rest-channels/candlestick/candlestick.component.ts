@@ -23,8 +23,8 @@ export class CandlestickComponent implements OnInit {
   stockData: [number, number, number, number, number][] = [];
 
   ngOnInit(): void {
-    const instrumntName: string = "CRO_USD"
-    this.candlestickSrv.getCandlesticks(instrumntName).subscribe((orderHistory: ApiResponse<CandlestickResult>) => {
+    const instrumentName: string = "CRO_USD"
+    this.candlestickSrv.getCandlesticks(instrumentName).subscribe((orderHistory: ApiResponse<CandlestickResult>) => {
       this.candlesticks = orderHistory.result.data;
       this.stockData = this.candlesticks.map(
         ({o, h, l, c, v, t}) => [t, o, h, l, c]
@@ -33,7 +33,7 @@ export class CandlestickComponent implements OnInit {
       this.stock = new StockChart({
 
         title: {
-          text: `Price of ${instrumntName}`
+          text: `Price of ${instrumentName}`
         },
 
         rangeSelector: {
@@ -55,7 +55,7 @@ export class CandlestickComponent implements OnInit {
         },
 
         series: [{
-          name: `${instrumntName}`,
+          name: `${instrumentName}`,
           type: 'candlestick',
           data: this.stockData,
           tooltip: {
