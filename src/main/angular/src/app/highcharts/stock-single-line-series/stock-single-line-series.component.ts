@@ -10,7 +10,7 @@ import {ChartModule, StockChart} from 'angular-highcharts';
   standalone: true,
   styleUrl: './stock-single-line-series.component.css'
 })
-export class StockSingleLineSeriesComponent implements OnInit{
+export class StockSingleLineSeriesComponent implements OnInit {
   stock: StockChart = new StockChart();
 
   ngOnInit() {
