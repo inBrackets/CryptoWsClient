@@ -10,6 +10,7 @@ import {StockSingleLineSeriesComponent} from './highcharts/stock-single-line-ser
 import {
   StockIntradayCandlestickComponent
 } from './highcharts/stock-intraday-candlestick/stock-intraday-candlestick.component';
+import {CandlestickComponent} from './pages/rest-channels/candlestick/candlestick.component';
 
 export const routes: Routes = [
   {
@@ -20,6 +21,7 @@ export const routes: Routes = [
       {
         path: 'ws/book', component: BookComponent,
       },
+      { path: 'rest/candlesticks', component: CandlestickComponent },
       {
         path: 'stock-single-line-series', component: StockSingleLineSeriesComponent,
       },

@@ -14,7 +14,13 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "../../../target/classes/static",
-            "allowedCommonJsDependencies": ["sockjs-client"],
+            "allowedCommonJsDependencies": [
+              "sockjs-client",
+              "highcharts",
+              "highcharts/highstock",
+              "highcharts/highmaps",
+              "highcharts/highcharts-gantt"
+            ],
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -40,7 +46,6 @@
               "./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
               "./node_modules/highcharts/highcharts.js",
               "./node_modules/highcharts/themes/adaptive.js"
-
             ]
           },
           "configurations": {
