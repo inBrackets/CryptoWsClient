@@ -1,13 +1,12 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {HighchartsChartComponent} from 'highcharts-angular';
-import * as Highcharts from 'highcharts';
 import {OrderbookData, OrderPoint} from '../../model/dto';
 import {BookWebsocketService} from '../../services/book.websocket.service';
 import {createOrderBookChartOptions} from './order-book-live-chart.config';
+import {Chart, ChartModule} from 'angular-highcharts';
 
 @Component({
   selector: 'app-order-book-live-chart',
-  imports: [HighchartsChartComponent],
+  imports: [ChartModule],
   templateUrl: './order-book-live-chart.component.html',
   standalone: true,
   styleUrl: './order-book-live-chart.component.css'
@@ -22,7 +21,7 @@ export class OrderBookLiveChartComponent implements OnInit {
 
   websocketSrv = inject(BookWebsocketService);
 
-  chartOptions: Highcharts.Options = createOrderBookChartOptions(
+  chartOptions: Chart = createOrderBookChartOptions(
     this.instrumentName, this.asksData, this.bidsData
   );
 

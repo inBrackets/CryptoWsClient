@@ -1,13 +1,14 @@
 import * as Highcharts from 'highcharts';
 import {OrderPoint} from '../../model/dto';
+import {Chart} from 'angular-highcharts';
 
 // factory function that returns chart options
 export function createOrderBookChartOptions(
   instrumentName: string,
   asksData: OrderPoint[],
   bidsData: OrderPoint[]
-): Highcharts.Options {
-  return {
+): Chart {
+  return new Chart({
     // custom property (not in Highcharts types)
     // we cast as any so we can store instrumentName
     ...({instrumentName} as any),
@@ -131,5 +132,5 @@ export function createOrderBookChartOptions(
       data: bidsData,
       yAxis: 1
     }]
-  };
+  });
 }
