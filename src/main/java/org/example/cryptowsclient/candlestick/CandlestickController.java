@@ -20,8 +20,9 @@ public class CandlestickController {
     @GetMapping("/get-all")
     @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
     private ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> getAll(
-            @RequestParam(value = "instrument_name", required = false, defaultValue = "BTC_USD") String instrumentName
+            @RequestParam(value = "instrument_name", required = false, defaultValue = "CRO_USD") String instrumentName,
+            @RequestParam(value = "time_frame", required = false, defaultValue = "M15") String timeFrame
     ) {
-        return candlestickService.getCandlesticksByInstrumentName(instrumentName);
+        return candlestickService.getCandlesticksByInstrumentName(instrumentName, timeFrame);
     }
 }

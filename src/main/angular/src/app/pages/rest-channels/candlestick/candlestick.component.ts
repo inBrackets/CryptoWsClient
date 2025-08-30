@@ -24,7 +24,8 @@ export class CandlestickComponent implements OnInit {
 
   ngOnInit(): void {
     const instrumentName: string = "CRO_USD"
-    this.candlestickSrv.getCandlesticks(instrumentName).subscribe((orderHistory: ApiResponse<CandlestickResult>) => {
+    const timeframe: string = "M15"
+    this.candlestickSrv.getCandlesticks(instrumentName, timeframe).subscribe((orderHistory: ApiResponse<CandlestickResult>) => {
       this.candlesticks = orderHistory.result.data;
       this.stockData = this.candlesticks.map(
         ({o, h, l, c, v, t}) => [t, o, h, l, c]
@@ -39,12 +40,16 @@ export class CandlestickComponent implements OnInit {
         rangeSelector: {
           buttons: [{
             type: 'hour',
-            count: 1,
-            text: '1h'
+            count: 2,
+            text: '2h'
           }, {
             type: 'day',
             count: 1,
             text: '1D'
+          }, {
+            type: 'month',
+            count: 1,
+            text: '1M'
           }, {
             type: 'all',
             count: 1,
