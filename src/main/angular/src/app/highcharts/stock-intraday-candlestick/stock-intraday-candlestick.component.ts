@@ -11,7 +11,7 @@ import {ChartModule, StockChart} from 'angular-highcharts';
   styleUrl: './stock-intraday-candlestick.component.css'
 })
 export class StockIntradayCandlestickComponent {
-  stock: StockChart | undefined;
+  stock: StockChart = new StockChart();
 
   ngOnInit() {
     this.stock = new StockChart({
