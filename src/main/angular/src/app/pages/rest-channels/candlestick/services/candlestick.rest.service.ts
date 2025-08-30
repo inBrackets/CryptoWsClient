@@ -15,6 +15,6 @@ export class CandlestickRestService {
   }
 
   getCandlesticks(instrumentName: string, timeFrame: string): Observable<ApiResponse<CandlestickResult>> {
-    return this.http.get<ApiResponse<CandlestickResult>>(`${this.apiUrl}/get-all?instrument_name=${instrumentName}&time_frame${timeFrame}`);
+    return this.http.get<ApiResponse<CandlestickResult>>(`${this.apiUrl}/get-all?instrument_name=${instrumentName}&time_frame=${timeFrame}`);
   }
 }
