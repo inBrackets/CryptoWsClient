@@ -1,4 +1,3 @@
-import * as Highcharts from 'highcharts';
 import {OrderPoint} from '../../model/dto';
 import {Chart} from 'angular-highcharts';
 
@@ -19,6 +18,52 @@ export function createOrderBookChartOptions(
       marginTop: 70,
     },
 
+    legend: {
+      itemStyle: {color: '#ffffff', fontSize: '14px'}
+    },
+
+    plotOptions: {
+      series: {
+        animation: false,
+        dataLabels: {enabled: true, color: '#ffffff'},
+        borderWidth: 0,
+        crisp: false
+      }
+    },
+
+    series: [{
+      type: 'bar',
+      pointWidth: 25, // thicker bars (Bids)
+      dataLabels: [{
+        align: 'right', alignTo: 'plotEdges',
+        style: {fontSize: '14px', textOutline: 'none'},
+        format: '{point.y:,.0f}'
+      }, {
+        align: 'left', inside: true,
+        style: {fontSize: '13px', textOutline: 'none'},
+        format: '{point.price:,.5f}'
+      }],
+      name: 'Asks',
+      color: '#C1666B',
+      data: asksData
+    }, {
+      type: 'bar',
+      pointWidth: 25, // thicker bars (Bids)
+      dataLabels: [{
+        align: 'left', alignTo: 'plotEdges',
+        style: {fontSize: '14px', textOutline: 'none'},
+        format: '{point.y:,.0f}'
+      }, {
+        align: 'right', inside: true,
+        style: {fontSize: '13px', textOutline: 'none'},
+        format: '{point.price:,.5f}'
+      }],
+      name: 'Bids',
+      color: '#48A9A6',
+      data: bidsData,
+      yAxis: 1
+    }],
+
     title: {
       text: 'Order book live chart',
       style: {color: '#ffffff'}
@@ -28,10 +73,6 @@ export function createOrderBookChartOptions(
       headerFormat: 'Price: <b>${point.point.price:,.5f}</b></br>',
       pointFormat: '{series.name}: <b>{point.y:,.0f}</b>',
       shape: 'rect'
-    },
-
-    legend: {
-      itemStyle: {color: '#ffffff', fontSize: '14px'}
     },
 
     xAxis: [{
@@ -81,56 +122,14 @@ export function createOrderBookChartOptions(
       labels: {
         enabled: true,
         formatter: function () {
-          const instrument = (this.axis.chart.userOptions as any).instrumentName || '';
-          if ((this as any).pos === 0) return `Price (${instrument})`;
-          if ((this as any).isLast) return 'Bids';
+          // const instrument = instrumentName;
+          // if ((this as any).pos === 0) return `Price (${instrument})`;
+          if (this.isLast) return 'Bids';
           return '';
         },
         style: {color: '#ffffff', fontSize: '16px', fontWeight: '700'},
         y: 10
       }
-    }],
-
-    plotOptions: {
-      series: {
-        animation: false,
-        dataLabels: {enabled: true, color: '#ffffff'},
-        borderWidth: 0,
-        crisp: false
-      }
-    },
-
-    series: [{
-      type: 'bar',
-      pointWidth: 25, // thicker bars (Bids)
-      dataLabels: [{
-        align: 'right', alignTo: 'plotEdges',
-        style: {fontSize: '14px', textOutline: 'none'},
-        format: '{point.y:,.0f}'
-      }, {
-        align: 'left', inside: true,
-        style: {fontSize: '13px', textOutline: 'none'},
-        format: '{point.price:,.5f}'
-      }],
-      name: 'Asks',
-      color: '#C1666B',
-      data: asksData
-    }, {
-      type: 'bar',
-      pointWidth: 25, // thicker bars (Bids)
-      dataLabels: [{
-        align: 'left', alignTo: 'plotEdges',
-        style: {fontSize: '14px', textOutline: 'none'},
-        format: '{point.y:,.0f}'
-      }, {
-        align: 'right', inside: true,
-        style: {fontSize: '13px', textOutline: 'none'},
-        format: '{point.price:,.5f}'
-      }],
-      name: 'Bids',
-      color: '#48A9A6',
-      data: bidsData,
-      yAxis: 1
     }]
   });
 }

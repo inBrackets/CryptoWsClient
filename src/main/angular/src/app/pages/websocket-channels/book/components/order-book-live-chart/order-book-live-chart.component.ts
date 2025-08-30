@@ -13,7 +13,6 @@ import {Chart, ChartModule} from 'angular-highcharts';
 })
 export class OrderBookLiveChartComponent implements OnInit {
 
-  updateFlag = false;
   instrumentName: string = "";
 
   bidsData: OrderPoint[] = [];
@@ -49,12 +48,29 @@ export class OrderBookLiveChartComponent implements OnInit {
           return {x: i, y: cumulativeBid, price: Number(b[0])};
         }).reverse();
 
-      // rebuild options with updated data
-      this.chartOptions = createOrderBookChartOptions(
-        this.instrumentName, this.asksData, this.bidsData
-      );
+      // control animations
+      const chartRef = this.chartOptions.ref;
+      if (chartRef) {
 
-      this.updateFlag = true;
+        // animate bards
+        chartRef.series[0].setData(this.asksData, true, {});
+        chartRef.series[1].setData(this.bidsData, true, {});
+
+        // prevent animating labels
+        chartRef.yAxis[0].update({}, false); // false -> no redraw/animation
+        (chartRef.userOptions as any)['instrumentName'] = this.instrumentName;
+        chartRef.yAxis[1].update({
+          labels: {
+            formatter: function () {
+              const instrument = (this.axis.chart.userOptions as any).instrumentName || '';
+              if ((this as any).pos === 0) return `Price (${instrument})`;
+              return '';
+            }
+          }
+        }, false);
+
+        chartRef.redraw(); // redraw once, instantly
+      }
     });
   }
 }
