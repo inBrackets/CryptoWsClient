@@ -1,7 +1,7 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {ApiResponse} from '../order-history/model/dto';
 import {CandlestickRestService} from './services/candlestick.rest.service';
-import {Candlestick, CandlestickResult} from './model/dto';
+import {Candlestick, CandlestickResult, CandlestickWithInstrumentName} from './model/dto';
 import {JsonPipe} from '@angular/common';
 import {ChartModule, StockChart} from 'angular-highcharts';
 import {FormsModule} from '@angular/forms';
@@ -23,7 +23,7 @@ export class CandlestickComponent implements OnInit {
   timeFrame: string = "";
 
   candlestickSrv = inject(CandlestickRestService);
-  candlesticks: Candlestick[] = [];
+  candlesticks: CandlestickWithInstrumentName[] = [];
   stock: StockChart = new StockChart();
   stockData: [number, number, number, number, number][] = [];
 
@@ -37,12 +37,12 @@ export class CandlestickComponent implements OnInit {
   // 🔑 reusable loader
   loadCandlesticks() {
     this.candlestickSrv.getCandlesticks(this.instrument, this.timeFrame)
-      .subscribe((response: ApiResponse<CandlestickResult>) => {
-        this.candlesticks = response.result.data;
+      .subscribe((response: CandlestickWithInstrumentName[]) => {
+        this.candlesticks = response;
 
         // map to Highcharts format: [timestamp, open, high, low, close]
         this.stockData = this.candlesticks.map(
-          ({o, h, l, c, v, t}) => [t, o, h, l, c]
+          ({instrumentName, o, h, l, c, v, t}) => [t, o, h, l, c]
         );
 
         // rebuild chart with new data
@@ -52,6 +52,7 @@ export class CandlestickComponent implements OnInit {
           },
           rangeSelector: {
             buttons: [
+              {type: 'minute', count: 1, text: '1m'},
               { type: 'hour', count: 2, text: '2h' },
               { type: 'day', count: 1, text: '1D' },
               { type: 'month', count: 1, text: '1M' },

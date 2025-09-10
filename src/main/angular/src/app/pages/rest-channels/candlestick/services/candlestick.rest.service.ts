@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from '../../../../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {ApiResponse, Candlestick, CandlestickResult} from '../model/dto';
+import {ApiResponse, Candlestick, CandlestickResult, CandlestickWithInstrumentName} from '../model/dto';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ export class CandlestickRestService {
   constructor(private http: HttpClient) {
   }
 
-  getCandlesticks(instrumentName: string, timeFrame: string): Observable<ApiResponse<CandlestickResult>> {
-    return this.http.get<ApiResponse<CandlestickResult>>(`${this.apiUrl}/get-all?instrument_name=${instrumentName}&time_frame=${timeFrame}`);
+  getCandlesticks(instrumentName: string, timeFrame: string): Observable<CandlestickWithInstrumentName[]> {
+    return this.http.get<CandlestickWithInstrumentName[]>(`${this.apiUrl}/get-all?instrument_name=${instrumentName}&time_frame=${timeFrame}`);
   }
 }

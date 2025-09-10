@@ -1,4 +1,4 @@
-package org.example.cryptowsclient.candlestick;
+package org.example.cryptowsclient.candlestick.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

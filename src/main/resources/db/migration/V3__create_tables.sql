@@ -19,3 +19,15 @@ CREATE TABLE instruments
     margin_sell_enabled boolean         NOT NULL,
     PRIMARY KEY (symbol)
 );
+
+CREATE TABLE candlestick
+(
+    instrument_name VARCHAR(255)   NOT NULL,
+    timestamp       BIGINT         NOT NULL,
+    open_price      NUMERIC(19, 8) NOT NULL,
+    high_price      NUMERIC(19, 8) NOT NULL,
+    low_price       NUMERIC(19, 8) NOT NULL,
+    close_price     NUMERIC(19, 8) NOT NULL,
+    volume          NUMERIC(19, 8) NOT NULL,
+    PRIMARY KEY (instrument_name, timestamp)
+);

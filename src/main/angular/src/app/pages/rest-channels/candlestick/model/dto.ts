@@ -22,3 +22,13 @@ export interface Candlestick {
   v: number;
   t: number;
 }
+
+export interface CandlestickWithInstrumentName {
+  instrumentName: string;
+  o: number;
+  h: number;
+  l: number;
+  c: number;
+  v: number;
+  t: number;
+}
