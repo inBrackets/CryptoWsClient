@@ -52,7 +52,8 @@ export class CandlestickComponent implements OnInit {
           },
           rangeSelector: {
             buttons: [
-              {type: 'minute', count: 1, text: '1m'},
+              {type: 'minute', count: 5, text: '5m'},
+              { type: 'hour', count: 1, text: '1h' },
               { type: 'hour', count: 2, text: '2h' },
               { type: 'day', count: 1, text: '1D' },
               { type: 'month', count: 1, text: '1M' },
