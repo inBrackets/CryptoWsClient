@@ -1,7 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {ApiResponse} from '../order-history/model/dto';
 import {CandlestickRestService} from './services/candlestick.rest.service';
-import {Candlestick, CandlestickResult, CandlestickWithInstrumentName} from './model/dto';
+import {CandlestickWithInstrumentName} from './model/dto';
 import {JsonPipe} from '@angular/common';
 import {ChartModule, StockChart} from 'angular-highcharts';
 import {FormsModule} from '@angular/forms';
@@ -26,6 +25,7 @@ export class CandlestickComponent implements OnInit {
   candlesticks: CandlestickWithInstrumentName[] = [];
   stock: StockChart = new StockChart();
   stockData: [number, number, number, number, number][] = [];
+  vData: [number, number][] = [];
 
   ngOnInit(): void {
     // set defaults
@@ -44,6 +44,9 @@ export class CandlestickComponent implements OnInit {
         this.stockData = this.candlesticks.map(
           ({instrumentName, o, h, l, c, v, t}) => [t, o, h, l, c]
         );
+        this.vData = this.candlesticks.map(
+          ({instrumentName, o, h, l, c, v, t}) => [t, v]
+        );
 
         // rebuild chart with new data
         this.stock = new StockChart({
@@ -53,21 +56,58 @@ export class CandlestickComponent implements OnInit {
           rangeSelector: {
             buttons: [
               {type: 'minute', count: 5, text: '5m'},
-              { type: 'hour', count: 1, text: '1h' },
-              { type: 'hour', count: 2, text: '2h' },
-              { type: 'day', count: 1, text: '1D' },
-              { type: 'month', count: 1, text: '1M' },
-              { type: 'all', count: 1, text: 'All' }
+              {type: 'hour', count: 1, text: '1h'},
+              {type: 'hour', count: 2, text: '2h'},
+              {type: 'day', count: 1, text: '1D'},
+              {type: 'month', count: 1, text: '1M'},
+              {type: 'all', count: 1, text: 'All'}
             ],
-            selected: 1,
-            inputEnabled: false
+            selected: 2,
+            inputEnabled: true
           },
-          series: [{
-            name: this.instrument,
-            type: 'candlestick',
-            data: this.stockData,
-            tooltip: { valueDecimals: 5 }
-          }]
+          yAxis: [{
+            startOnTick: false,
+            endOnTick: false,
+            labels: {
+              align: 'right',
+              x: -3
+            },
+            title: {
+              text: 'OHLC'
+            },
+            height: '60%',
+            lineWidth: 2,
+            resize: {
+              enabled: true
+            }
+          }, {
+            labels: {
+              align: 'right',
+              x: -3
+            },
+            title: {
+              text: 'Volume'
+            },
+            top: '65%',
+            height: '35%',
+            offset: 0,
+            lineWidth: 2
+          }],
+          series: [
+            {
+              name: this.instrument,
+              type: 'candlestick',
+              data: this.stockData,
+              tooltip: {valueDecimals: 5}
+            },
+            {
+              type: 'column',
+              name: 'Volume',
+              id: 'volume',
+              data: this.vData,
+              yAxis: 1
+            }
+          ]
         });
       });
   }
