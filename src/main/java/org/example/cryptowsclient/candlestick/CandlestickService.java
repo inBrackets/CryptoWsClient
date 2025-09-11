@@ -59,11 +59,11 @@ public class CandlestickService {
     }
 
     @Transactional
-    public void saveCandlesticks(String instrumentName, List<CandlestickDto> candleStickData) {
+    public void saveCandlesticks(String instrumentName, String interval, List<CandlestickDto> candleStickData) {
 
         candleStickData.stream()
                 .map(dto -> CandlestickEntity.builder()
-                        .id(new CandlestickId(instrumentName, dto.getTimestamp()))
+                        .id(new CandlestickId(instrumentName, interval, dto.getTimestamp()))
                         .openPrice(dto.getOpenPrice())
                         .highPrice(dto.getHighPrice())
                         .lowPrice(dto.getLowPrice())
@@ -74,7 +74,7 @@ public class CandlestickService {
 
     public void saveTodayCandleSticks() {
         List<CandlestickDto> last300CandleSticks = getLast300CandlesticksByInstrumentName("CRO_USD", "1m").getBody().getResult().getData();
-        saveCandlesticks("CRO_USD", last300CandleSticks);
+        saveCandlesticks("CRO_USD", "1m", last300CandleSticks);
         long utcMidnight = LocalDate.now(ZoneOffset.UTC)
                 .atStartOfDay(ZoneOffset.UTC)
                 .toInstant()
@@ -83,7 +83,7 @@ public class CandlestickService {
 
         while (startTime > utcMidnight) {
             last300CandleSticks = getLast300CandlesticksByInstrumentNameBeforeTimestamp("CRO_USD", "1m", startTime + 60000).getBody().getResult().getData();
-            saveCandlesticks("CRO_USD", last300CandleSticks);
+            saveCandlesticks("CRO_USD", "1m", last300CandleSticks);
             startTime = last300CandleSticks.stream().mapToLong(CandlestickDto::getTimestamp).min().orElseThrow();
         }
     }

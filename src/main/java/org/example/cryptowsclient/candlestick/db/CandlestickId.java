@@ -11,5 +11,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class CandlestickId implements Serializable {
     private String instrumentName;
+    private String timeInterval;
     private long timestamp;
 }
