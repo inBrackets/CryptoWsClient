@@ -16,11 +16,16 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.ta4j.core.BarSeries;
+import org.ta4j.core.indicators.RSIIndicator;
+import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -150,6 +155,23 @@ public class CandlestickService {
                     .orElseThrow();
         }
         System.out.println(format("Added to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
+    }
+
+    public List<Map<String, Object>> calculateRsi(int barCount, TimeFrame timeFrame, String instrumentName) {
+        List<CandlestickWithInstrumentNameDto> candleSticks = getCandlesticks(instrumentName, timeFrame);
+
+        BarSeries series = Ta4jConverter.toBarSeries(candleSticks, timeFrame);
+        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+        RSIIndicator rsi = new RSIIndicator(closePrice, barCount);
+        List<Map<String, Object>> rsiValues = new ArrayList<>();
+
+        for (int i = barCount - 1; i <= series.getEndIndex(); i++) {
+            Map<String, Object> entry = new HashMap<>();
+            entry.put("date", series.getBar(i).getEndTime().toString());
+            entry.put("rsi", rsi.getValue(i).doubleValue());
+            rsiValues.add(entry);
+        }
+        return rsiValues;
     }
 }
 
