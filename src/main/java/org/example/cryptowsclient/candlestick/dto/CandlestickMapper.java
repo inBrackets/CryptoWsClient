@@ -9,5 +9,6 @@ public interface CandlestickMapper {
 
     @Mapping(target = "instrumentName", source = "id.instrumentName")
     @Mapping(target = "timestamp", source = "id.timestamp")
+    @Mapping(target = "timeframe", source = "id.timeframe")
     CandlestickWithInstrumentNameDto toDtoWithInstrumentName(CandlestickEntity candlestickEntity);
 }

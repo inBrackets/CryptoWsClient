@@ -17,6 +17,9 @@ public class CandlestickWithInstrumentNameDto {
     @JsonProperty("instrumentName")
     private String instrumentName;
 
+    @JsonProperty("timeframe")
+    private String timeframe;
+
     @JsonProperty("o")
     private BigDecimal openPrice;
 

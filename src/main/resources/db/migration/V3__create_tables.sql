@@ -22,9 +22,9 @@ CREATE TABLE instruments
 
 CREATE TABLE candlestick
 (
-    instrument_name VARCHAR(16)   NOT NULL,
+    instrument_name VARCHAR(16)    NOT NULL,
     timestamp       BIGINT         NOT NULL,
-    time_interval   VARCHAR(8)   NOT NULL,
+    timeframe       VARCHAR(8)     NOT NULL,
     open_price      NUMERIC(19, 8) NOT NULL,
     high_price      NUMERIC(19, 8) NOT NULL,
     low_price       NUMERIC(19, 8) NOT NULL,

@@ -17,18 +17,18 @@ public class CandlestickEntity {
     @EmbeddedId
     private CandlestickId id;
 
-    @Column(nullable = false, precision = 19, scale = 8)
+    @Column(name = "openPrice")
     private BigDecimal openPrice;
 
-    @Column(nullable = false, precision = 19, scale = 8)
+    @Column(name = "highPrice")
     private BigDecimal highPrice;
 
-    @Column(nullable = false, precision = 19, scale = 8)
+    @Column(name = "lowPrice")
     private BigDecimal lowPrice;
 
-    @Column(nullable = false, precision = 19, scale = 8)
+    @Column(name = "closePrice")
     private BigDecimal closePrice;
 
-    @Column(nullable = false, precision = 19, scale = 8)
+    @Column(name = "volume")
     private BigDecimal volume;
 }
