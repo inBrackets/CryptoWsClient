@@ -30,7 +30,7 @@ export class CandlestickComponent implements OnInit {
   ngOnInit(): void {
     // set defaults
     this.instrument = "CRO_USD"
-    this.timeFrame = "M15"
+    this.timeFrame = "15m"
     this.loadCandlesticks();
   }
 
