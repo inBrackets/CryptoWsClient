@@ -167,7 +167,7 @@ public class CandlestickService {
 
         for (int i = barCount - 1; i <= series.getEndIndex(); i++) {
             Map<String, Object> entry = new HashMap<>();
-            entry.put("date", series.getBar(i).getEndTime().toString());
+            entry.put("date", series.getBar(i).getEndTime().toInstant().toEpochMilli());
             entry.put("rsi", rsi.getValue(i).doubleValue());
             rsiValues.add(entry);
         }
