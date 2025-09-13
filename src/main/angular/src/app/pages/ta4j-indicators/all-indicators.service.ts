@@ -13,8 +13,8 @@ export class AllIndicatorsService {
 
   apiUrl: string = `http://localhost:${environment.springBootPort}`
 
-  getRsiSeries(): Observable<{ date: number; rsi: number }[]> {
-    return this.http.get<{ date: number; rsi: number }[]>(`${this.apiUrl}/api/candlestick/get-rsi`);
+  getRsiSeries(): Observable<{ timestamp: number; rsi: number }[]> {
+    return this.http.get<{ timestamp: number; rsi: number }[]>(`${this.apiUrl}/api/candlestick/get-rsi`);
   }
 
 

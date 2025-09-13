@@ -25,9 +25,9 @@ export class RsiIndicatorComponent implements OnInit {
   chartOptions: Highcharts.Options = {}
 
   ngOnInit(): void {
-    this.masterSrv.getRsiSeries().subscribe((response : { date: number; rsi: number }[])=> {
+    this.masterSrv.getRsiSeries().subscribe((response : { timestamp: number; rsi: number }[])=> {
       this.data = response.map(
-        ({date, rsi}) => [date, rsi]
+        ({timestamp, rsi}) => [timestamp, rsi]
       );
       this.updateChart();
     })
