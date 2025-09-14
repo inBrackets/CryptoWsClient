@@ -48,8 +48,8 @@ export class OrderComponent implements OnInit {
   }
 
   getRowClass(order: UserOrderMessage): string {
-    if (order.result.data[0].side === 'BUY' && order.result.data[0].status === 'FILLED') return 'table-danger';
-    if (order.result.data[0].side === 'SELL' && order.result.data[0].status === 'FILLED') return 'table-success';
+    if (order.result.data[0].side === 'BUY' && order.result.data[0].status === 'FILLED') return 'table-success';
+    if (order.result.data[0].side === 'SELL' && order.result.data[0].status === 'FILLED') return 'table-danger';
     return '';
   }
 
