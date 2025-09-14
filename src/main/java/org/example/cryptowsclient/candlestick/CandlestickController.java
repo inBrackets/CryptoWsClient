@@ -28,7 +28,7 @@ public class CandlestickController {
             @RequestParam(value = "time_frame", required = false, defaultValue = "1m") String timeFrame
     ) {
         return ResponseEntity
-                .status(HttpStatus.OK).body(candlestickService.getCandlesticks(timeFrame, TimeFrame.fromSymbol(timeFrame)));
+                .status(HttpStatus.OK).body(candlestickService.getCandlesticks(instrumentName, TimeFrame.fromSymbol(timeFrame)));
     }
 
     @GetMapping("/get-rsi")

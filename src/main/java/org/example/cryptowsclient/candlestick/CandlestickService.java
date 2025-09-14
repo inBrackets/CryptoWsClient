@@ -84,7 +84,7 @@ public class CandlestickService {
     }
 
     public List<CandlestickWithInstrumentNameDto> getCandlesticks(String instrumentName, TimeFrame timeframe) {
-        List<CandlestickEntity> candlestickEntities = candlestickRepository.findByInstrumentNameAndTimeframe(instrumentName, timeframe.getSymbol());
+        List<CandlestickEntity> candlestickEntities = candlestickRepository.findByIdInstrumentNameAndIdTimeframe(instrumentName, timeframe.getSymbol());
         return candlestickEntities.stream().map(candlestickMapper::toDtoWithInstrumentName).collect(Collectors.toList());
     }
 

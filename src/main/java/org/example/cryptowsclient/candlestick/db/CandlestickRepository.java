@@ -11,10 +11,9 @@ import java.util.List;
 @Repository
 public interface CandlestickRepository extends JpaRepository<CandlestickEntity, CandlestickId> {
 
-    @Query("SELECT c FROM CandlestickEntity c WHERE c.id.instrumentName = :instrumentName AND c.id.timeframe = :timeframe")
-    List<CandlestickEntity> findByInstrumentNameAndTimeframe(@Param("instrumentName") String instrumentName,
-                                                         @Param("timeframe") String timeframe);
-
+    List<CandlestickEntity> findByIdInstrumentNameAndIdTimeframe(
+            String instrumentName,
+            String timeframe);
 
     @Modifying
     @Query(value = """
