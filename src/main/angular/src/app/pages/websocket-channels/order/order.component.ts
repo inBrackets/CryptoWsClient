@@ -31,6 +31,10 @@ export class OrderComponent implements OnInit {
     this.websocketSrv.order$.subscribe(message => {
       this.currentOrder = message;
 
+      const audio = new Audio('assets/sounds/spinning-coin.mp3');
+      audio.volume = 1.0;
+      audio.play();
+
       this.lastUserOrders.unshift(message); // add new animal at the front
     });
   }
