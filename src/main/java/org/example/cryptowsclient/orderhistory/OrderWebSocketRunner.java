@@ -26,10 +26,12 @@ public class OrderWebSocketRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws JsonProcessingException {
+        long nonce = System.currentTimeMillis();
         ApiRequestJson authRequest = ApiRequestJson.builder()
                 .id(1L)
                 .method("public/auth")
                 .apiKey(ApplicationProperties.getApiKey())
+                .nonce(nonce)
                 .build();
 
         String authMessage = signAndParseToJsonString(authRequest, ApplicationProperties.getApiSecret());
