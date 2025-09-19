@@ -1,5 +1,6 @@
 package org.example.cryptowsclient.candlestick.db;
 
+import org.example.cryptowsclient.candlestick.enums.TimeFrame;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,7 @@ public interface CandlestickRepository extends JpaRepository<CandlestickEntity, 
 
     List<CandlestickEntity> findByIdInstrumentNameAndIdTimeframe(
             String instrumentName,
-            String timeframe);
+            String timeFrame);
 
     @Modifying
     @Query(value = """
@@ -29,5 +30,28 @@ public interface CandlestickRepository extends JpaRepository<CandlestickEntity, 
 """, nativeQuery = true)
     void upsert(@Param("c") CandlestickEntity c);
 
+
+    @Modifying
+    @Query(value = """
+    DELETE FROM candlestick
+    WHERE timeframe = :#{#timeFrame.symbol}
+      AND timestamp = (
+          SELECT t.max_ts
+          FROM (
+              SELECT MAX(c2.timestamp) AS max_ts
+              FROM candlestick c2
+              WHERE c2.timeframe = :#{#timeFrame.symbol}
+          ) AS t
+      )
+    LIMIT 1
+""", nativeQuery = true)
+    void deleteLatestByTimeframe(@Param("timeFrame") TimeFrame timeFrame);
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM candlestick
+    WHERE timeframe = :#{#timeFrame.symbol}
+""", nativeQuery = true)
+    long countByTimeFrame(@Param("timeFrame") TimeFrame timeFrame);
 
 }

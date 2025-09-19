@@ -102,22 +102,6 @@ public class CandlestickService {
                         .build()).forEach(candlestickRepository::upsert);
     }
 
-//    public void saveTodayCandleSticks() {
-//        List<CandlestickDto> last300CandleSticks = getLast300CandlesticksByInstrumentName("CRO_USD", "1m").getBody().getResult().getData();
-//        saveCandlesticks("CRO_USD", "1m", last300CandleSticks);
-//        long utcMidnight = LocalDate.now(ZoneOffset.UTC)
-//                .atStartOfDay(ZoneOffset.UTC)
-//                .toInstant()
-//                .toEpochMilli();
-//        long startTime = last300CandleSticks.stream().mapToLong(CandlestickDto::getTimestamp).min().orElseThrow();
-//
-//        while (startTime > utcMidnight) {
-//            last300CandleSticks = getLast300CandlesticksByInstrumentNameBeforeTimestamp("CRO_USD", "1m", startTime + 60000).getBody().getResult().getData();
-//            saveCandlesticks("CRO_USD", "1m", last300CandleSticks);
-//            startTime = last300CandleSticks.stream().mapToLong(CandlestickDto::getTimestamp).min().orElseThrow();
-//        }
-//    }
-
     @Transactional
     public void saveLastDaysCandleSticks(String instrument, TimeFrame timeframe, int daysCount) {
         System.out.println(format("Started to add to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
@@ -157,6 +141,19 @@ public class CandlestickService {
         System.out.println(format("Added to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
     }
 
+    @Transactional
+    public void saveLastXCandleSticks(String instrument, TimeFrame timeframe, int candlestıckCount) {
+        System.out.println(format("Started to add to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
+
+        List<CandlestickDto> lastXCandleSticks =
+                getCandlesticksByInstrumentName(instrument, timeframe, candlestıckCount)
+                        .getBody().getResult().getData();
+
+        saveCandlesticks(instrument, timeframe, lastXCandleSticks);
+
+        System.out.println(format("Added to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
+    }
+
     public List<Map<String, Object>> calculateRsi(int barCount, TimeFrame timeFrame, String instrumentName) {
         List<CandlestickWithInstrumentNameDto> candleSticks = getCandlesticks(instrumentName, timeFrame);
 
@@ -172,6 +169,16 @@ public class CandlestickService {
             rsiValues.add(entry);
         }
         return rsiValues;
+    }
+
+    @Transactional
+    public void removeOldestCandlestickByTimeFrame(TimeFrame timeFrame) {
+        candlestickRepository.deleteLatestByTimeframe(timeFrame);
+    }
+
+    @Transactional
+    public long getCandlesticksCountByTimeframe(TimeFrame timeFrame) {
+        return candlestickRepository.countByTimeFrame(timeFrame);
     }
 }
 
