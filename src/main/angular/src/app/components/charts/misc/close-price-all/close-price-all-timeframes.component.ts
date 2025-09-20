@@ -36,49 +36,49 @@ export class ClosePriceAllTimeframesComponent implements OnInit {
   ngOnInit(): void {
     this.masterSrv.getCandleSticksSeries("12h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_12h = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("4h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_4h = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("2h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_2h = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("1h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_1h = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("30m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_30m = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("15m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_15m = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("5m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_5m = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("1m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_1m = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
