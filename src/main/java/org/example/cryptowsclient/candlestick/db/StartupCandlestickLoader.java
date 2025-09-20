@@ -48,7 +48,7 @@ public class StartupCandlestickLoader {
     public void loadOneMinuteCandlesticks() {
         // the latest candlestick has incomplete volume
         // add&update candlesticks
-        candlestickService.saveLastDaysCandleSticks("CRO_USD", ONE_MINUTE, 3);
+        candlestickService.saveLastXCandleSticks("CRO_USD", ONE_MINUTE, 3);
 
         // remove surplus candlesticks
 //        long rowsTo_delete = candlestickService.getCandlesticksCountByTimeframe(ONE_MINUTE) - MAX_CANDLESTICKS;
@@ -59,11 +59,11 @@ public class StartupCandlestickLoader {
 
     @Scheduled(fixedRate = 5, timeUnit = MINUTES)
     public void loadFiveMinuteCandlesticks() {
-        candlestickService.saveLastDaysCandleSticks("CRO_USD", FIVE_MINUTES, 3);
+        candlestickService.saveLastXCandleSticks("CRO_USD", FIVE_MINUTES, 3);
     }
 
     @Scheduled(fixedRate = 15, timeUnit = MINUTES)
     public void loadFifteenMinuteCandlesticks() {
-        candlestickService.saveLastDaysCandleSticks("CRO_USD", FIFTEEN_MINUTES, 3);
+        candlestickService.saveLastXCandleSticks("CRO_USD", FIFTEEN_MINUTES, 3);
     }
 }

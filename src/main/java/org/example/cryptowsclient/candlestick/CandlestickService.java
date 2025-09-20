@@ -43,7 +43,11 @@ public class CandlestickService {
     public ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> getLast300CandlesticksByInstrumentName(
             String instrumentName, TimeFrame timeframe
     ) {
-        String url = format("%s/public/get-candlestick?instrument_name=%s&timeframe=%s&count=300", BASE_URL, instrumentName, timeframe.getSymbol());
+        String url = GetCandlestickUrlBuilder.create()
+                .instrumentName(instrumentName)
+                .timeframe(timeframe)
+                .build();
+
         ParameterizedTypeReference<ApiResponseDto<ApiResultDto<CandlestickDto>>> typeRef =
                 new ParameterizedTypeReference<>() {
                 };
@@ -60,7 +64,12 @@ public class CandlestickService {
     public ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> getCandlesticksBetweenTimeRangeByInstrumentName(
             String instrumentName, TimeFrame timeframe, long startTimeStamp, long endTimeStamp
     ) {
-        String url = format("%s/public/get-candlestick?instrument_name=%s&count=300&timeframe=%s&start_ts=%s&end_ts=%s", BASE_URL, instrumentName, timeframe.getSymbol(), startTimeStamp, endTimeStamp);
+        String url = GetCandlestickUrlBuilder.create()
+                .instrumentName(instrumentName)
+                .timeframe(timeframe)
+                .startTs(startTimeStamp)
+                .endTs(endTimeStamp)
+                .build();
         ParameterizedTypeReference<ApiResponseDto<ApiResultDto<CandlestickDto>>> typeRef =
                 new ParameterizedTypeReference<>() {
                 };
@@ -77,18 +86,11 @@ public class CandlestickService {
     public ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> getCandlesticksByInstrumentName(
             String instrumentName, TimeFrame timeframe, int count
     ) {
-        String url = format("%s/public/get-candlestick?instrument_name=%s&timeframe=%s&count=%s", BASE_URL, instrumentName, timeframe.getSymbol(), count);
-        ParameterizedTypeReference<ApiResponseDto<ApiResultDto<CandlestickDto>>> typeRef =
-                new ParameterizedTypeReference<>() {
-                };
-
-        return restTemplate.exchange(url, HttpMethod.GET, null, typeRef);
-    }
-
-    public ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> getLast300CandlesticksByInstrumentNameBeforeTimestamp(
-            String instrumentName, TimeFrame timeframe, long end_ts
-    ) {
-        String url = format("%s/public/get-candlestick?instrument_name=%s&timeframe=%s&count=300&end_ts=%s", BASE_URL, instrumentName, timeframe.getSymbol(), end_ts);
+        String url = GetCandlestickUrlBuilder.create()
+                .instrumentName(instrumentName)
+                .timeframe(timeframe)
+                .count(count)
+                .build();
         ParameterizedTypeReference<ApiResponseDto<ApiResultDto<CandlestickDto>>> typeRef =
                 new ParameterizedTypeReference<>() {
                 };
