@@ -169,7 +169,10 @@ export class OpenPriceAllTimeframesComponent  implements OnInit {
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
-      ]
+      ],
+      credits : {
+        enabled: false
+      }
     }
   }
 }

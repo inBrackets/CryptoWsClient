@@ -84,7 +84,10 @@ export class RsiIndicatorSingleTimeframeComponent implements OnInit {
             }
           }
         }
-      }]
+      }],
+      credits : {
+        enabled: false
+      }
     }
   }
 }

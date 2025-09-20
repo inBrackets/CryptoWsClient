@@ -107,7 +107,10 @@ export class CandlestickComponent implements OnInit {
               data: this.vData,
               yAxis: 1
             }
-          ]
+          ],
+          credits : {
+            enabled: false
+          }
         });
       });
   }

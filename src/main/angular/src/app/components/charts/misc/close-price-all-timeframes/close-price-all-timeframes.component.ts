@@ -168,7 +168,10 @@ export class ClosePriceAllTimeframesComponent implements OnInit {
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
-      ]
+      ],
+      credits : {
+        enabled: false
+      }
     }
   }
 }

@@ -169,7 +169,10 @@ export class RsiIndicatorAllTimeframesComponent implements OnInit {
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
-      ]
+      ],
+      credits : {
+        enabled: false
+      }
     }
   }
 }
