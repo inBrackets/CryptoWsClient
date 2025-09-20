@@ -11,7 +11,7 @@ import {
   StockIntradayCandlestickComponent
 } from './highcharts/stock-intraday-candlestick/stock-intraday-candlestick.component';
 import {CandlestickComponent} from './pages/rest-channels/candlestick/candlestick.component';
-import {RsiIndicatorComponent} from './pages/ta4j-indicators/rsi-indicator/rsi-indicator.component';
+import {RsiIndicatorComponent} from './components/charts/ta4j-indicators/rsi-indicator/rsi-indicator.component';
 
 export const routes: Routes = [
   {

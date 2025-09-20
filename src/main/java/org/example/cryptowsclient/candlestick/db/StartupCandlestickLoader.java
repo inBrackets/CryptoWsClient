@@ -33,6 +33,7 @@ public class StartupCandlestickLoader {
         candlestickService.saveLastXCandleSticks("CRO_USD", ONE_MINUTE, INITIAL_CANDLESTICK_COUNT);
         candlestickService.saveLastXCandleSticks("CRO_USD", FIVE_MINUTES, INITIAL_CANDLESTICK_COUNT);
         candlestickService.saveLastXCandleSticks("CRO_USD", FIFTEEN_MINUTES, INITIAL_CANDLESTICK_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", FIFTEEN_MINUTES, 30);
         candlestickService.saveLastXCandleSticks("CRO_USD", HALF_HOUR, INITIAL_CANDLESTICK_COUNT);
         candlestickService.saveLastXCandleSticks("CRO_USD", ONE_HOUR, INITIAL_CANDLESTICK_COUNT);
         candlestickService.saveLastXCandleSticks("CRO_USD", TWO_HOURS, INITIAL_CANDLESTICK_COUNT);
@@ -50,10 +51,10 @@ public class StartupCandlestickLoader {
         candlestickService.saveLastXCandleSticks("CRO_USD", ONE_MINUTE, 3);
 
         // remove surplus candlesticks
-        long rowsTo_delete = candlestickService.getCandlesticksCountByTimeframe(ONE_MINUTE) - MAX_CANDLESTICKS;
-        for (int i = 0; i < rowsTo_delete; i++) {
-            candlestickService.removeOldestCandlestickByTimeFrame(ONE_MINUTE);
-        }
+//        long rowsTo_delete = candlestickService.getCandlesticksCountByTimeframe(ONE_MINUTE) - MAX_CANDLESTICKS;
+//        for (int i = 0; i < rowsTo_delete; i++) {
+//            candlestickService.removeOldestCandlestickByTimeFrame(ONE_MINUTE);
+//        }
     }
 
     @Scheduled(fixedRate = 5, timeUnit = MINUTES)
