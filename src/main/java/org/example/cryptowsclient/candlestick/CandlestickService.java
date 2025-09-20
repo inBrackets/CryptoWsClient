@@ -171,6 +171,17 @@ public class CandlestickService {
         return rsiValues;
     }
 
+    public double calculateLastRsiValue(int barCount, TimeFrame timeFrame, String instrumentName) {
+        List<CandlestickWithInstrumentNameDto> candleSticks = getCandlesticks(instrumentName, timeFrame);
+
+        BarSeries series = Ta4jConverter.toBarSeries(candleSticks, timeFrame);
+        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+        RSIIndicator rsi = new RSIIndicator(closePrice, barCount);
+
+        return rsi.getValue(series.getEndIndex()).doubleValue();
+    }
+
+
     @Transactional
     public void removeOldestCandlestickByTimeFrame(TimeFrame timeFrame) {
         candlestickRepository.deleteLatestByTimeframe(timeFrame);
