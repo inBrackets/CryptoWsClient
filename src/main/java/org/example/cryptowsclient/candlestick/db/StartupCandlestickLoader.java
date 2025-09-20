@@ -27,7 +27,7 @@ public class StartupCandlestickLoader {
     private final CandlestickService candlestickService;
     private final long MAX_CANDLESTICKS = 100;
     private final int INITIAL_CANDLESTICK_COUNT = 50;
-    private final int DAYS_COUNT = 30;
+    private final int DAYS_COUNT = 1;
 
     @EventListener(ApplicationReadyEvent.class)
     public void loadCandlesticksOnStartup() {

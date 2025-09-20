@@ -1,11 +1,11 @@
 import {Component, inject, Input, OnInit} from '@angular/core';
-import {AllIndicatorsService} from '../all-indicators.service';
 import {NgIf} from '@angular/common';
 import {HighchartsChartComponent, providePartialHighcharts} from 'highcharts-angular';
-
+import {AllIndicatorsService} from '../../ta4j-indicators/all-indicators.service';
+import {CandlestickWithInstrumentName} from '../../../../pages/rest-channels/candlestick/model/dto';
 
 @Component({
-  selector: 'app-rsi-indicator-all-timeframes',
+  selector: 'app-close-price-all-timeframes',
   imports: [
     HighchartsChartComponent,
     NgIf
@@ -15,11 +15,11 @@ import {HighchartsChartComponent, providePartialHighcharts} from 'highcharts-ang
       modules: () => [import('highcharts/esm/modules/stock')],
     })
   ],
-  templateUrl: './rsi-indicator-all-timeframes.component.html',
+  templateUrl: './close-price-all-timeframes.component.html',
   standalone: true,
-  styleUrl: './rsi-indicator-all-timeframes.component.css'
+  styleUrl: './close-price-all-timeframes.component.css'
 })
-export class RsiIndicatorAllTimeframesComponent implements OnInit {
+export class ClosePriceAllTimeframesComponent implements OnInit {
 
   masterSrv = inject(AllIndicatorsService);
   data_1m: [number, number][] = [];
@@ -32,54 +32,53 @@ export class RsiIndicatorAllTimeframesComponent implements OnInit {
   data_12h: [number, number][] = [];
   chartOptions: Highcharts.Options = {}
 
-  @Input() barCount: number = 14;
 
   ngOnInit(): void {
-    this.masterSrv.getRsiSeries("12h", this.barCount).subscribe((response : { timestamp: number; rsi: number }[])=> {
+    this.masterSrv.getCandleSticksSeries("12h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_12h = response.map(
-        ({timestamp, rsi}) => [timestamp, rsi]
+        ({instrumentName, o, h, l, c, v, t}) => [t, c]
       );
       this.updateChart();
     })
-    this.masterSrv.getRsiSeries("4h", this.barCount).subscribe((response : { timestamp: number; rsi: number }[])=> {
+    this.masterSrv.getCandleSticksSeries("4h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_4h = response.map(
-        ({timestamp, rsi}) => [timestamp, rsi]
+        ({instrumentName, o, h, l, c, v, t}) => [t, c]
       );
       this.updateChart();
     })
-    this.masterSrv.getRsiSeries("2h", this.barCount).subscribe((response : { timestamp: number; rsi: number }[])=> {
+    this.masterSrv.getCandleSticksSeries("2h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_2h = response.map(
-        ({timestamp, rsi}) => [timestamp, rsi]
+        ({instrumentName, o, h, l, c, v, t}) => [t, c]
       );
       this.updateChart();
     })
-    this.masterSrv.getRsiSeries("1h", this.barCount).subscribe((response : { timestamp: number; rsi: number }[])=> {
+    this.masterSrv.getCandleSticksSeries("1h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_1h = response.map(
-        ({timestamp, rsi}) => [timestamp, rsi]
+        ({instrumentName, o, h, l, c, v, t}) => [t, c]
       );
       this.updateChart();
     })
-    this.masterSrv.getRsiSeries("30m", this.barCount).subscribe((response : { timestamp: number; rsi: number }[])=> {
+    this.masterSrv.getCandleSticksSeries("30m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_30m = response.map(
-        ({timestamp, rsi}) => [timestamp, rsi]
+        ({instrumentName, o, h, l, c, v, t}) => [t, c]
       );
       this.updateChart();
     })
-    this.masterSrv.getRsiSeries("15m", this.barCount).subscribe((response : { timestamp: number; rsi: number }[])=> {
+    this.masterSrv.getCandleSticksSeries("15m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_15m = response.map(
-        ({timestamp, rsi}) => [timestamp, rsi]
+        ({instrumentName, o, h, l, c, v, t}) => [t, c]
       );
       this.updateChart();
     })
-    this.masterSrv.getRsiSeries("5m", this.barCount).subscribe((response : { timestamp: number; rsi: number }[])=> {
+    this.masterSrv.getCandleSticksSeries("5m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_5m = response.map(
-        ({timestamp, rsi}) => [timestamp, rsi]
+        ({instrumentName, o, h, l, c, v, t}) => [t, c]
       );
       this.updateChart();
     })
-    this.masterSrv.getRsiSeries("1m", this.barCount).subscribe((response : { timestamp: number; rsi: number }[])=> {
+    this.masterSrv.getCandleSticksSeries("1m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_1m = response.map(
-        ({timestamp, rsi}) => [timestamp, rsi]
+        ({instrumentName, o, h, l, c, v, t}) => [t, c]
       );
       this.updateChart();
     })
@@ -106,7 +105,7 @@ export class RsiIndicatorAllTimeframesComponent implements OnInit {
       },
 
       title: {
-        text: `ta4j RSI - All timeframes (${this.barCount} bars)`,
+        text: `Close prices - All timeframes`,
       },
 
       legend: {
@@ -119,49 +118,49 @@ export class RsiIndicatorAllTimeframesComponent implements OnInit {
 
       series: [
         {
-          name: 'RSI 1m',
+          name: 'Close 1m',
           data: this.data_1m,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'RSI 5m',
+          name: 'Close 5m',
           data: this.data_5m,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'RSI 15m',
+          name: 'Close 15m',
           data: this.data_15m,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'RSI 30m',
+          name: 'Close 30m',
           data: this.data_30m,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'RSI 1h',
+          name: 'Close 1h',
           data: this.data_1h,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'RSI 2h',
+          name: 'Close 2h',
           data: this.data_2h,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'RSI 4h',
+          name: 'Close 4h',
           data: this.data_4h,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'RSI 1m',
+          name: 'Close 1m',
           data: this.data_12h,
           type: 'line',
           tooltip: { valueDecimals: 5 }

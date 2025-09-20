@@ -14,20 +14,18 @@ import org.example.cryptowsclient.common.ApiResultDto;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.indicators.RSIIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -46,6 +44,23 @@ public class CandlestickService {
             String instrumentName, TimeFrame timeframe
     ) {
         String url = format("%s/public/get-candlestick?instrument_name=%s&timeframe=%s&count=300", BASE_URL, instrumentName, timeframe.getSymbol());
+        ParameterizedTypeReference<ApiResponseDto<ApiResultDto<CandlestickDto>>> typeRef =
+                new ParameterizedTypeReference<>() {
+                };
+
+        try {
+            sleep(20L);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        return restTemplate.exchange(url, HttpMethod.GET, null, typeRef);
+    }
+
+    public ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> getCandlesticksBetweenTimeRangeByInstrumentName(
+            String instrumentName, TimeFrame timeframe, long startTimeStamp, long endTimeStamp
+    ) {
+        String url = format("%s/public/get-candlestick?instrument_name=%s&count=300&timeframe=%s&start_ts=%s&end_ts=%s", BASE_URL, instrumentName, timeframe.getSymbol(), startTimeStamp, endTimeStamp);
         ParameterizedTypeReference<ApiResponseDto<ApiResultDto<CandlestickDto>>> typeRef =
                 new ParameterizedTypeReference<>() {
                 };
@@ -90,7 +105,7 @@ public class CandlestickService {
         return candlestickEntities.stream().map(candlestickMapper::toDtoWithInstrumentName).collect(Collectors.toList());
     }
 
-    // @Transactional is forbidden here since already another trnasactional method is calling it
+    @Transactional
     public void saveCandlesticks(String instrumentName, TimeFrame timeFrame, List<CandlestickDto> candleStickData) {
 
         candleStickData.stream()
@@ -107,48 +122,29 @@ public class CandlestickService {
     @Transactional
     public void saveLastDaysCandleSticks(String instrument, TimeFrame timeframe, int daysCount) {
         System.out.println(format("Started to add to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
+        long currentTime = Instant.now().toEpochMilli();
+        long startTime = currentTime - Duration.ofDays(daysCount).toMillis();
 
-        // initial fetch (latest 300 candles)
-        List<CandlestickDto> last300CandleSticks =
-                getLast300CandlesticksByInstrumentName(instrument, timeframe)
-                        .getBody().getResult().getData();
+        long durationOfCandlesticksInMillis = timeframe.getDurationOfCandlesticksInMillis(250);
 
-        saveCandlesticks(instrument, timeframe, last300CandleSticks);
-
-        // ⬅️ calculate start boundary: days ago from now
-        long oneMonthAgoUtc = ZonedDateTime.now(ZoneOffset.UTC)
-                .minusDays(daysCount)
-                .toInstant()
-                .toEpochMilli();
-
-        long startTime = last300CandleSticks.stream()
-                .mapToLong(CandlestickDto::getTimestamp)
-                .min()
-                .orElseThrow();
-
-        // keep fetching older candles until we pass the one-month-ago boundary
-        while (startTime > oneMonthAgoUtc) {
-            last300CandleSticks =
-                    getLast300CandlesticksByInstrumentNameBeforeTimestamp(
-                            instrument, timeframe, startTime)
+        while (startTime < currentTime) {
+            List<CandlestickDto> last300CandleSticks =
+                    getCandlesticksBetweenTimeRangeByInstrumentName(instrument, timeframe, startTime, startTime + durationOfCandlesticksInMillis)
                             .getBody().getResult().getData();
 
             saveCandlesticks(instrument, timeframe, last300CandleSticks);
-
-            startTime = last300CandleSticks.stream()
-                    .mapToLong(CandlestickDto::getTimestamp)
-                    .min()
-                    .orElseThrow();
+            startTime = startTime + durationOfCandlesticksInMillis;
         }
+
         System.out.println(format("Added to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
     }
 
     @Transactional
-    public void saveLastXCandleSticks(String instrument, TimeFrame timeframe, int candlestıckCount) {
+    public void saveLastXCandleSticks(String instrument, TimeFrame timeframe, int candlestickCount) {
         System.out.println(format("Started to add to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
 
         List<CandlestickDto> lastXCandleSticks =
-                getCandlesticksByInstrumentName(instrument, timeframe, candlestıckCount)
+                getCandlesticksByInstrumentName(instrument, timeframe, candlestickCount)
                         .getBody().getResult().getData();
 
         saveCandlesticks(instrument, timeframe, lastXCandleSticks);

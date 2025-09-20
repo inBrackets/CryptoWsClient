@@ -30,5 +30,5 @@ CREATE TABLE candlestick
     low_price       NUMERIC(19, 8) NOT NULL,
     close_price     NUMERIC(19, 8) NOT NULL,
     volume          NUMERIC(19, 8) NOT NULL,
-    PRIMARY KEY (instrument_name, timestamp)
+    PRIMARY KEY (instrument_name, timestamp, timeframe)
 );

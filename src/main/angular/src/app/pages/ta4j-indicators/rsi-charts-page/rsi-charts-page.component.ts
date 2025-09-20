@@ -3,12 +3,16 @@ import {RsiIndicatorSingleTimeframeComponent} from '../../../components/charts/t
 import {
   RsiIndicatorAllTimeframesComponent
 } from '../../../components/charts/ta4j-indicators/rsi-indicator-all-timeframes/rsi-indicator-all-timeframes.component';
+import {
+  ClosePriceAllTimeframesComponent
+} from '../../../components/charts/misc/close-price-all/close-price-all-timeframes.component';
 
 @Component({
   selector: 'app-rsi-charts-page',
   imports: [
     RsiIndicatorSingleTimeframeComponent,
-    RsiIndicatorAllTimeframesComponent
+    RsiIndicatorAllTimeframesComponent,
+    ClosePriceAllTimeframesComponent
   ],
   templateUrl: './rsi-charts-page.component.html',
   standalone: true,

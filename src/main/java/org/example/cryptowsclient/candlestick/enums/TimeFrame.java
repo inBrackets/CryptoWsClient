@@ -34,6 +34,10 @@ public enum TimeFrame {
     private static final Map<String, TimeFrame> SYMBOL_MAP = Arrays.stream(values())
             .collect(Collectors.toMap(TimeFrame::getSymbol, tf -> tf));
 
+    public long getDurationOfCandlesticksInMillis(int candlesticksCount) {
+        return this.getDuration().toMillis() * candlesticksCount;
+    }
+
     public static TimeFrame fromSymbol(String symbol) {
         TimeFrame tf = SYMBOL_MAP.get(symbol);
         if (tf == null) {
