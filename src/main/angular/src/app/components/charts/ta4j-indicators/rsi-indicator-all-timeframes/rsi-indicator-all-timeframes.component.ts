@@ -110,7 +110,10 @@ export class RsiIndicatorAllTimeframesComponent implements OnInit {
       },
 
       legend: {
-        itemStyle: {color: '#ffffff', fontSize: '14px'}
+        enabled: true,
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'middle'
       },
 
       xAxis: {
@@ -161,7 +164,7 @@ export class RsiIndicatorAllTimeframesComponent implements OnInit {
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'RSI 1m',
+          name: 'RSI 12h',
           data: this.data_12h,
           type: 'line',
           tooltip: { valueDecimals: 5 }
