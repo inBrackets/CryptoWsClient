@@ -1,11 +1,12 @@
-import {Component, inject, Input, OnInit} from '@angular/core';
-import {NgIf} from '@angular/common';
-import {HighchartsChartComponent, providePartialHighcharts} from 'highcharts-angular';
+import {Component, inject, OnInit} from '@angular/core';
 import {AllIndicatorsService} from '../../ta4j-indicators/all-indicators.service';
 import {CandlestickWithInstrumentName} from '../../../../pages/rest-channels/candlestick/model/dto';
+import {NgIf} from '@angular/common';
+import {HighchartsChartComponent, providePartialHighcharts} from 'highcharts-angular';
+
 
 @Component({
-  selector: 'app-close-price-all-timeframes',
+  selector: 'app-open-price-all-timeframes',
   imports: [
     HighchartsChartComponent,
     NgIf
@@ -15,11 +16,11 @@ import {CandlestickWithInstrumentName} from '../../../../pages/rest-channels/can
       modules: () => [import('highcharts/esm/modules/stock')],
     })
   ],
-  templateUrl: './close-price-all-timeframes.component.html',
+  templateUrl: './open-price-all-timeframes.component.html',
   standalone: true,
-  styleUrl: './close-price-all-timeframes.component.css'
+  styleUrl: './open-price-all-timeframes.component.css'
 })
-export class ClosePriceAllTimeframesComponent implements OnInit {
+export class OpenPriceAllTimeframesComponent  implements OnInit {
 
   masterSrv = inject(AllIndicatorsService);
   data_1m: [number, number][] = [];
@@ -36,49 +37,49 @@ export class ClosePriceAllTimeframesComponent implements OnInit {
   ngOnInit(): void {
     this.masterSrv.getCandleSticksSeries("12h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_12h = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("4h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_4h = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("2h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_2h = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("1h").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_1h = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("30m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_30m = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("15m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_15m = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("5m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_5m = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
     this.masterSrv.getCandleSticksSeries("1m").subscribe((response : CandlestickWithInstrumentName[])=> {
       this.data_1m = response.map(
-        ({instrumentName, o, h, l, c, v, t}) => [t, c]
+        ({instrumentName, o, h, l, c, v, t}) => [t, o]
       );
       this.updateChart();
     })
@@ -105,7 +106,7 @@ export class ClosePriceAllTimeframesComponent implements OnInit {
       },
 
       title: {
-        text: `Close prices - All timeframes`,
+        text: `Open prices - All timeframes`,
       },
 
       legend: {
@@ -121,49 +122,49 @@ export class ClosePriceAllTimeframesComponent implements OnInit {
 
       series: [
         {
-          name: 'Close 1m',
+          name: 'Open 1m',
           data: this.data_1m,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'Close 5m',
+          name: 'Open 5m',
           data: this.data_5m,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'Close 15m',
+          name: 'Open 15m',
           data: this.data_15m,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'Close 30m',
+          name: 'Open 30m',
           data: this.data_30m,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'Close 1h',
+          name: 'Open 1h',
           data: this.data_1h,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'Close 2h',
+          name: 'Open 2h',
           data: this.data_2h,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'Close 4h',
+          name: 'Open 4h',
           data: this.data_4h,
           type: 'line',
           tooltip: { valueDecimals: 5 }
         },
         {
-          name: 'Close 12h',
+          name: 'Open 12h',
           data: this.data_12h,
           type: 'line',
           tooltip: { valueDecimals: 5 }

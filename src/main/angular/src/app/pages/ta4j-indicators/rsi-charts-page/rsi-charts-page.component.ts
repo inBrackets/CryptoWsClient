@@ -6,13 +6,17 @@ import {
 import {
   ClosePriceAllTimeframesComponent
 } from '../../../components/charts/misc/close-price-all-timeframes/close-price-all-timeframes.component';
+import {
+  OpenPriceAllTimeframesComponent
+} from '../../../components/charts/misc/open-price-all-timeframes/open-price-all-timeframes.component';
 
 @Component({
   selector: 'app-rsi-charts-page',
   imports: [
     RsiIndicatorSingleTimeframeComponent,
     RsiIndicatorAllTimeframesComponent,
-    ClosePriceAllTimeframesComponent
+    ClosePriceAllTimeframesComponent,
+    OpenPriceAllTimeframesComponent
   ],
   templateUrl: './rsi-charts-page.component.html',
   standalone: true,
