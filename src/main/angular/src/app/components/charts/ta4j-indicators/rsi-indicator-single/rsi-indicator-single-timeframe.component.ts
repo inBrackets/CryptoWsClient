@@ -1,10 +1,10 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, Input, OnInit} from '@angular/core';
 import {NgIf} from '@angular/common';
 import {HighchartsChartComponent, providePartialHighcharts} from 'highcharts-angular';
 import {AllIndicatorsService} from '../all-indicators.service';
 
 @Component({
-  selector: 'app-rsi-indicator',
+  selector: 'app-rsi-indicator-single-timeframe',
   imports: [
     HighchartsChartComponent,
     NgIf
@@ -14,18 +14,21 @@ import {AllIndicatorsService} from '../all-indicators.service';
       modules: () => [import('highcharts/esm/modules/stock')],
     })
   ],
-  templateUrl: './rsi-indicator.component.html',
+  templateUrl: './rsi-indicator-single-timeframe.component.html',
   standalone: true,
-  styleUrl: './rsi-indicator.component.css'
+  styleUrl: './rsi-indicator-single-timeframe.component.css'
 })
-export class RsiIndicatorComponent implements OnInit {
+export class RsiIndicatorSingleTimeframeComponent implements OnInit {
 
   masterSrv = inject(AllIndicatorsService);
   data: [number, number][] = [];
   chartOptions: Highcharts.Options = {}
 
+  @Input() timeframe: string = "15m";
+  @Input() barCount: number = 14;
+
   ngOnInit(): void {
-    this.masterSrv.getRsiSeries("5m", 14).subscribe((response : { timestamp: number; rsi: number }[])=> {
+    this.masterSrv.getRsiSeries(this.timeframe, this.barCount).subscribe((response : { timestamp: number; rsi: number }[])=> {
       this.data = response.map(
         ({timestamp, rsi}) => [timestamp, rsi]
       );
@@ -54,7 +57,7 @@ export class RsiIndicatorComponent implements OnInit {
       },
 
       title: {
-        text: 'ta4j RSI'
+        text: `ta4j RSI - ${this.timeframe}(${this.barCount} bars)`,
       },
 
       xAxis: {

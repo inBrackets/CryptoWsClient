@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RsiIndicatorComponent } from './rsi-indicator.component';
+import { RsiIndicatorSingleTimeframeComponent } from './rsi-indicator-single-timeframe.component';
 
 describe('RsiIndicatorComponent', () => {
-  let component: RsiIndicatorComponent;
-  let fixture: ComponentFixture<RsiIndicatorComponent>;
+  let component: RsiIndicatorSingleTimeframeComponent;
+  let fixture: ComponentFixture<RsiIndicatorSingleTimeframeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RsiIndicatorComponent]
+      imports: [RsiIndicatorSingleTimeframeComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RsiIndicatorComponent);
+    fixture = TestBed.createComponent(RsiIndicatorSingleTimeframeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

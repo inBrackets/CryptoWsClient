@@ -27,28 +27,28 @@ public class StartupCandlestickLoader {
     private final CandlestickService candlestickService;
     private final long MAX_CANDLESTICKS = 100;
     private final int INITIAL_CANDLESTICK_COUNT = 50;
+    private final int DAYS_COUNT = 30;
 
     @EventListener(ApplicationReadyEvent.class)
     public void loadCandlesticksOnStartup() {
-        candlestickService.saveLastXCandleSticks("CRO_USD", ONE_MINUTE, INITIAL_CANDLESTICK_COUNT);
-        candlestickService.saveLastXCandleSticks("CRO_USD", FIVE_MINUTES, INITIAL_CANDLESTICK_COUNT);
-        candlestickService.saveLastXCandleSticks("CRO_USD", FIFTEEN_MINUTES, INITIAL_CANDLESTICK_COUNT);
-        candlestickService.saveLastDaysCandleSticks("CRO_USD", FIFTEEN_MINUTES, 30);
-        candlestickService.saveLastXCandleSticks("CRO_USD", HALF_HOUR, INITIAL_CANDLESTICK_COUNT);
-        candlestickService.saveLastXCandleSticks("CRO_USD", ONE_HOUR, INITIAL_CANDLESTICK_COUNT);
-        candlestickService.saveLastXCandleSticks("CRO_USD", TWO_HOURS, INITIAL_CANDLESTICK_COUNT);
-        candlestickService.saveLastXCandleSticks("CRO_USD", FOUR_HOURS, INITIAL_CANDLESTICK_COUNT);
-        candlestickService.saveLastXCandleSticks("CRO_USD", TWELVE_HOURS, INITIAL_CANDLESTICK_COUNT);
-        candlestickService.saveLastXCandleSticks("CRO_USD", ONE_DAY, INITIAL_CANDLESTICK_COUNT);
-        candlestickService.saveLastXCandleSticks("CRO_USD", ONE_WEEK, INITIAL_CANDLESTICK_COUNT);
-        candlestickService.saveLastXCandleSticks("CRO_USD", TWO_WEEKS, INITIAL_CANDLESTICK_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", ONE_MINUTE, DAYS_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", FIVE_MINUTES, DAYS_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", FIFTEEN_MINUTES, DAYS_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", HALF_HOUR, DAYS_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", ONE_HOUR, DAYS_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", TWO_HOURS, DAYS_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", FOUR_HOURS, DAYS_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", TWELVE_HOURS, DAYS_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", ONE_DAY, DAYS_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", ONE_WEEK, DAYS_COUNT);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", TWO_WEEKS, DAYS_COUNT);
     }
 
     @Scheduled(fixedRate = 1, timeUnit = MINUTES)
     public void loadOneMinuteCandlesticks() {
         // the latest candlestick has incomplete volume
         // add&update candlesticks
-        candlestickService.saveLastXCandleSticks("CRO_USD", ONE_MINUTE, 3);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", ONE_MINUTE, 3);
 
         // remove surplus candlesticks
 //        long rowsTo_delete = candlestickService.getCandlesticksCountByTimeframe(ONE_MINUTE) - MAX_CANDLESTICKS;
@@ -59,11 +59,11 @@ public class StartupCandlestickLoader {
 
     @Scheduled(fixedRate = 5, timeUnit = MINUTES)
     public void loadFiveMinuteCandlesticks() {
-        candlestickService.saveLastXCandleSticks("CRO_USD", FIVE_MINUTES, 3);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", FIVE_MINUTES, 3);
     }
 
     @Scheduled(fixedRate = 15, timeUnit = MINUTES)
     public void loadFifteenMinuteCandlesticks() {
-        candlestickService.saveLastXCandleSticks("CRO_USD", FIFTEEN_MINUTES, 3);
+        candlestickService.saveLastDaysCandleSticks("CRO_USD", FIFTEEN_MINUTES, 3);
     }
 }
