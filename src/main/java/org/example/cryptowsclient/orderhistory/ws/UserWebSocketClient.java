@@ -1,10 +1,12 @@
-package org.example.cryptowsclient.orderhistory;
+package org.example.cryptowsclient.orderhistory.ws;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.cryptowsclient.book.dto.Heartbeat;
 import org.example.cryptowsclient.common.ApiResponseDto;
 import org.example.cryptowsclient.common.ApiResultDto;
 import org.example.cryptowsclient.orderhistory.dto.OrderItemDto;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
@@ -22,9 +24,11 @@ public class UserWebSocketClient {
     private static final String WS_URL = "wss://stream.crypto.com/exchange/v1/user";
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final SimpMessagingTemplate messagingTemplate;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public UserWebSocketClient(SimpMessagingTemplate messagingTemplate) {
+    public UserWebSocketClient(SimpMessagingTemplate messagingTemplate, ApplicationEventPublisher eventPublisher) {
         this.messagingTemplate = messagingTemplate;
+        this.eventPublisher = eventPublisher;
     }
 
     public void connect(List<String> initialMessages, String topic) {
@@ -55,6 +59,7 @@ public class UserWebSocketClient {
     private Mono<Void> handleMessage(org.springframework.web.reactive.socket.WebSocketSession session, String payload, String topic) {
         try {
             // Handle heartbeat
+
             if (payload.contains("\"method\":\"public/heartbeat\"")) {
                 Heartbeat parsed = objectMapper.readValue(payload, Heartbeat.class);
                 Heartbeat heartbeatResponse = Heartbeat.builder()
@@ -62,6 +67,8 @@ public class UserWebSocketClient {
                         .method("public/respond-heartbeat")
                         .build();
                 return session.send(Mono.just(session.textMessage(heartbeatResponse.toJson()))).then(Mono.empty());
+            } else if (payload.contains("\"method\":\"public/auth\"") || !payload.contains("\"result\":{")) {
+                return Mono.empty();
             }
             // Handle authentication failure
             // fixed, but still want to keep these lines for the future
@@ -74,11 +81,15 @@ public class UserWebSocketClient {
 //                return session.send(Mono.just(session.textMessage(requestBody))).then(Mono.empty());
 //            }
             // Handle book data
-            ApiResponseDto<ApiResultDto<OrderItemDto>> parsed = objectMapper.readValue(payload, ApiResponseDto.class);
+            ApiResponseDto<ApiResultDto<OrderItemDto>> parsed =
+                    objectMapper.readValue(payload, new TypeReference<ApiResponseDto<ApiResultDto<OrderItemDto>>>() {});
+
             String formatted = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             System.out.println("[" + formatted + "] Parsed DTO:\n" + parsed);
 
             messagingTemplate.convertAndSend(topic, parsed);
+
+            eventPublisher.publishEvent(new OrderMessageEvent(parsed));
 
         } catch (Exception e) {
             System.err.println("Failed to parse message:\n" + payload);

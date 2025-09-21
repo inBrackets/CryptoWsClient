@@ -1,13 +1,11 @@
-package org.example.cryptowsclient.orderhistory;
+package org.example.cryptowsclient.orderhistory.ws;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.cryptowsclient.book.MarketWebSocketClient;
 import org.example.cryptowsclient.common.ApiRequestJson;
 import org.example.cryptowsclient.common.ApplicationProperties;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
