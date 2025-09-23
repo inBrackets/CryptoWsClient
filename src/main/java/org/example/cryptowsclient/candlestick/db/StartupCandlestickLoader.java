@@ -70,16 +70,24 @@ public class StartupCandlestickLoader {
 //        }
     }
 
-    @Scheduled(fixedRate = 10, timeUnit = SECONDS)
+    @Scheduled(fixedRate = 30, timeUnit = SECONDS)
     public void executeAlgoCondition() {
         if(isDataDownloaded.get()) {
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String formatted = now.format(formatter);
 
-            boolean con_1m = candlestickService.calculateLastRsiValue(14, ONE_MINUTE, "CRO_USD") > 50;
-            boolean con_5m = candlestickService.calculateLastRsiValue(14, FIVE_MINUTES, "CRO_USD") > 50;
-            boolean con_15m = candlestickService.calculateLastRsiValue(14, FIFTEEN_MINUTES, "CRO_USD") > 50;
+            candlestickService.saveLastXCandleSticks("CRO_USD", ONE_MINUTE, 1);
+            candlestickService.saveLastXCandleSticks("CRO_USD", FIVE_MINUTES, 1);
+            candlestickService.saveLastXCandleSticks("CRO_USD", FIFTEEN_MINUTES, 1);
+
+            double rsi1m = candlestickService.calculateLastRsiValue(14, ONE_MINUTE, "CRO_USD");
+            double rsi5m = candlestickService.calculateLastRsiValue(14, FIVE_MINUTES, "CRO_USD");
+            double rsi15m = candlestickService.calculateLastRsiValue(14, FIFTEEN_MINUTES, "CRO_USD");
+            boolean con_1m = rsi1m > 50;
+            boolean con_5m = rsi5m > 50;
+            boolean con_15m = rsi15m > 50;
+            System.out.println(formatted + "Current RSI: 1m=" + rsi1m + ", 5m=" + rsi5m + ", 15m=" + rsi15m );
             if (con_1m && con_5m && con_15m) {
                 try (InputStream is = getClass().getResourceAsStream("/sounds/cash-register-purchase.mp3")) {
                     if (is == null) {

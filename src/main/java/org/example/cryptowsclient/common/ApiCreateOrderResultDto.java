@@ -1,27 +1,23 @@
 package org.example.cryptowsclient.common;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponseDto<GenericResult> {
+public class ApiCreateOrderResultDto {
 
-    @JsonProperty("id")
-    private Long id;
-
-    @JsonProperty("method")
-    private String method;
-
-    @JsonProperty("code")
-    private Integer code;
-
-    @JsonProperty("result")
-    private GenericResult result;
+    @JsonProperty("client_oid")
+    private Long clientOrderId;
+    @JsonProperty("order_id")
+    private Long orderId;
 
 }

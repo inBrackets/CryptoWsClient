@@ -1,17 +1,24 @@
 package org.example.cryptowsclient.orderhistory.ws;
 
+import lombok.AllArgsConstructor;
 import org.example.cryptowsclient.common.ApiResponseDto;
 import org.example.cryptowsclient.common.ApiResultDto;
+import org.example.cryptowsclient.orderhistory.OrderHistoryService;
 import org.example.cryptowsclient.orderhistory.dto.OrderItemDto;
-import org.example.cryptowsclient.orderhistory.dto.enums.OrderStatus;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.example.cryptowsclient.orderhistory.dto.enums.OrderStatus.ACTIVE;
 import static org.example.cryptowsclient.orderhistory.dto.enums.OrderStatus.CANCELED;
 
 @Service
+@AllArgsConstructor
 public class OrderMessageListener {
+
+    OrderHistoryService orderHistoryService;
 
     @EventListener
     public void handleOrderMessage(OrderMessageEvent event) {
@@ -25,5 +32,11 @@ public class OrderMessageListener {
         }
         System.out.println("**************************************************");
         System.out.println("Listener received order message: " + payload);
+    }
+
+    @Scheduled(fixedRate = 5, timeUnit = SECONDS)
+    public void debug(){
+        ResponseEntity<ApiResponseDto<ApiResultDto<OrderItemDto>>> openOrders = orderHistoryService.getAllOpenOrders();
+        // orderHistoryService.createNewOrder();
     }
 }

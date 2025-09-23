@@ -30,7 +30,7 @@ public class StartupOrderHistoryLoader {
 
     @EventListener(ApplicationReadyEvent.class)
     public void loadCandlesticksOnStartup() {
-        List<OrderItemDto> orderHistoryFromLast24Hours = orderHistoryService.getOrderHistoryFromLast24Hours();
+        List<OrderItemDto> orderHistoryFromLast24Hours = orderHistoryService.getOrderHistoryFromLast24Hours().getBody().getResult().getData();
         orderHistoryService.saveToDB(orderHistoryFromLast24Hours);
 
 

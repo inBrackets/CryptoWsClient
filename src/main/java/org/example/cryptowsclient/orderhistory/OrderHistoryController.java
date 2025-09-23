@@ -3,6 +3,7 @@ package org.example.cryptowsclient.orderhistory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import org.example.cryptowsclient.common.ApiRequestJson;
 import org.example.cryptowsclient.common.ApplicationProperties;
 import org.example.cryptowsclient.orderhistory.dto.OrderItemDto;
@@ -18,61 +19,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.example.cryptowsclient.auth.SigningUtil.signAndParseToJsonString;
 
 @RestController
+@AllArgsConstructor
 public class OrderHistoryController {
 
     private final RestTemplate restTemplate = new RestTemplate();
+    private final OrderHistoryService orderHistoryService;
 
     @GetMapping("/private/get-order-history")
     @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
-    public ResponseEntity<ApiResponseDto<ApiResultDto<OrderItemDto>>> forwardRequest() {
-        String targetUrl = "https://api.crypto.com/exchange/v1/private/get-order-history";
+    public ResponseEntity<List<OrderItemDto>> forwardRequest() {
 
-        ApiRequestJson request = ApiRequestJson.builder()
-                .method("private/get-order-history")
-                .params(Map.of(
-                        "instrument_name", "CRO_USD"
-                ))
-                .apiKey(ApplicationProperties.getApiKey())
-                .id(1L)
-                .build();
-
-        String requestBody = signAndParseToJsonString(request, ApplicationProperties.getApiSecret());
-
-        // Create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // Build the request entity
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        // Send POST
-        ResponseEntity<String> response = restTemplate.exchange(
-                targetUrl,
-                HttpMethod.POST,
-                requestEntity,
-                String.class
-        );
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        // Deserialize JSON into your DTO
-        ApiResponseDto<ApiResultDto<OrderItemDto>> dto;
-        try {
-            dto = objectMapper.readValue(
-                    response.getBody(),
-                    new TypeReference<>() {
-                    }
-            );
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        ResponseEntity<ApiResponseDto<ApiResultDto<OrderItemDto>>> response = orderHistoryService.getOrderHistoryFromLast24Hours();
 
         return ResponseEntity
                 .status(response.getStatusCode())
-                .body(dto);
+                .body(response.getBody().getResult().getData());
     }
 }
