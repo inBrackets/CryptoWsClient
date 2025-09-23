@@ -10,6 +10,8 @@ import org.example.cryptowsclient.orderhistory.db.OrderHistoryEntity;
 import org.example.cryptowsclient.orderhistory.db.OrderHistoryMapper;
 import org.example.cryptowsclient.orderhistory.db.OrderHistoryRepository;
 import org.example.cryptowsclient.orderhistory.dto.OrderItemDto;
+import org.example.cryptowsclient.orderhistory.dto.enums.OrderType;
+import org.example.cryptowsclient.orderhistory.dto.enums.Side;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,11 +21,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 import static org.example.cryptowsclient.auth.SigningUtil.signAndParseToJsonString;
+import static org.example.cryptowsclient.orderhistory.dto.enums.OrderType.LIMIT;
 
 @Service
 @AllArgsConstructor
@@ -103,17 +107,17 @@ public class OrderHistoryService {
         return response;
     }
 
-    public ResponseEntity<ApiResponseDto<ApiCreateOrderResultDto>> createNewOrder() {
+    public ResponseEntity<ApiResponseDto<ApiCreateOrderResultDto>> createNewOrder(String instrumentName, OrderType orderType, Side side, BigDecimal price, Long quantity) {
         String targetUrl = "https://api.crypto.com/exchange/v1/private/create-order";
 
         ApiRequestJson request = ApiRequestJson.builder()
                 .method("private/create-order")
                 .params(Map.of(
-                        "instrument_name", "CRO_USD",
-                        "type", "LIMIT",
-                        "side", "SELL",
-                        "price", "0.262",
-                        "quantity", "20"
+                        "instrument_name", instrumentName,
+                        "type", LIMIT.name(),
+                        "side", side.name(),
+                        "price", price.toString(),
+                        "quantity", quantity.toString()
                 ))
                 .apiKey(ApplicationProperties.getApiKey())
                 .id(Instant.now().toEpochMilli())
