@@ -1,4 +1,4 @@
-package org.example.cryptowsclient.book;
+package org.example.cryptowsclient.book.ws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.cryptowsclient.book.dto.BookDataMessage;

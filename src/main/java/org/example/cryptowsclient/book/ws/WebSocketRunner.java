@@ -1,4 +1,4 @@
-package org.example.cryptowsclient.book;
+package org.example.cryptowsclient.book.ws;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.example.cryptowsclient.book.dto.SubscribeRequest;
