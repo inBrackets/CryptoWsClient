@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.example.cryptowsclient.orderhistory.dto.enums.OrderStatus.ACTIVE;
 import static org.example.cryptowsclient.orderhistory.dto.enums.OrderStatus.CANCELED;
@@ -35,13 +36,9 @@ public class OrderMessageListener {
     @EventListener
     public void handleOrderMessage(OrderMessageEvent event) {
         ApiResponseDto<ApiResultDto<OrderItemDto>> payload = event.getPayload();
+        System.out.println(format("The status %s has been caught!", payload.getResult().getData().get(0).getStatus().name()));
 
-        // do something (e.g., save to DB, trigger alert, play sound, etc.)
-        if(payload.getResult().getData().get(0).getStatus().equals(ACTIVE)) {
-            System.out.println("The status ACTIVE has been caught!");
-        }
         if(payload.getResult().getData().get(0).getStatus().equals(FILLED) && payload.getResult().getData().get(0).getSide() == SELL) {
-            System.out.println("The status CANCELED has been caught!");
             ResponseEntity<ApiResponseDto<BookApiResultDto>> book = bookRestService.getOrderBook("CRO_USD", 10);
             BigDecimal limitPrice = new BigDecimal(event.getPayload().getResult().getData().get(0).getLimitPrice());
             BigDecimal currentPrice = book.getBody().getResult().getData().get(0).getAsks().get(0).get(0);

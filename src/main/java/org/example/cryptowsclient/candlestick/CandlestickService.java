@@ -145,9 +145,15 @@ public class CandlestickService {
     public void saveLastXCandleSticks(String instrument, TimeFrame timeframe, int candlestickCount) {
         System.out.println(format("Started to add to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
 
-        List<CandlestickDto> lastXCandleSticks =
-                getCandlesticksByInstrumentName(instrument, timeframe, candlestickCount)
-                        .getBody().getResult().getData();
+        ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> response = null;
+        try {
+            response = getCandlesticksByInstrumentName(instrument, timeframe, candlestickCount);
+        } catch (Exception e) {
+
+            throw new RuntimeException(e);
+        }
+        List<CandlestickDto> lastXCandleSticks = response.getBody().getResult().getData();
+
 
         saveCandlesticks(instrument, timeframe, lastXCandleSticks);
 
