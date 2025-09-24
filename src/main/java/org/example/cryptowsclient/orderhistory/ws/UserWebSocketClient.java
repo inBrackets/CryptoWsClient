@@ -59,6 +59,7 @@ public class UserWebSocketClient {
                     connected.set(true);
                     System.out.println("✅ WebSocket connected (attempt " + attempt + ")");
 
+                    // Send all initial messages (auth, then subscribe)
                     Mono<Void> sendMessages = Mono.delay(Duration.ofSeconds(1))
                             .thenMany(Flux.fromIterable(initialMessages))
                             .map(session::textMessage)
