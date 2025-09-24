@@ -36,6 +36,12 @@ public class OrderMessageListener {
     @EventListener
     public void handleOrderMessage(OrderMessageEvent event) {
         ApiResponseDto<ApiResultDto<OrderItemDto>> payload = event.getPayload();
+
+        if (payload.getResult() == null || payload.getResult().getData() == null) {
+            System.out.println(format("Ignoring non-data message: %s", payload));
+            return;
+        }
+
         System.out.println(format("The status %s has been caught!", payload.getResult().getData().get(0).getStatus().name()));
 
         if(payload.getResult().getData().get(0).getStatus().equals(FILLED) && payload.getResult().getData().get(0).getSide() == SELL) {

@@ -24,26 +24,9 @@ public class OrderWebSocketRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws JsonProcessingException {
-        long nonce = System.currentTimeMillis();
-        ApiRequestJson authRequest = ApiRequestJson.builder()
-                .id(1L)
-                .method("public/auth")
-                .apiKey(ApplicationProperties.getApiKey())
-                .nonce(nonce)
-                .build();
 
-        String authMessage = signAndParseToJsonString(authRequest, ApplicationProperties.getApiSecret());
 
-        ApiRequestJson subscribeRequest = ApiRequestJson.builder()
-                .id(2L)
-                .method("subscribe")
-                .params(Map.of("channels", List.of("user.order")))
-                .build();
-
-        // The non-auth ws message should not have any nonce, signature, api key or api secret
-        String subscribeMessage = new ObjectMapper().writeValueAsString(subscribeRequest);
-
-        client.connect(List.of(authMessage, subscribeMessage), "/topic/user.order");
+        client.connect("/topic/user.order");
     }
 
 }

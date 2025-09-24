@@ -3,8 +3,10 @@ package org.example.cryptowsclient.orderhistory.ws;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.cryptowsclient.book.dto.Heartbeat;
+import org.example.cryptowsclient.common.ApiRequestJson;
 import org.example.cryptowsclient.common.ApiResponseDto;
 import org.example.cryptowsclient.common.ApiResultDto;
+import org.example.cryptowsclient.common.ApplicationProperties;
 import org.example.cryptowsclient.orderhistory.dto.OrderItemDto;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -20,7 +22,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.example.cryptowsclient.auth.SigningUtil.signAndParseToJsonString;
 
 @Component
 public class UserWebSocketClient {
@@ -36,14 +41,13 @@ public class UserWebSocketClient {
         this.messagingTemplate = messagingTemplate;
         this.eventPublisher = eventPublisher;
 
-        // Prevent dropped errors from killing the pipeline
         Hooks.onErrorDropped(e -> {
             System.err.println("Dropped error: " + e.getMessage());
         });
     }
 
-    public void connect(List<String> initialMessages, String topic) {
-        attemptConnection(initialMessages, topic, 1);
+    public void connect(String topic) {
+        attemptConnection(buildInitialMessages(), topic, 1);
     }
 
     private void attemptConnection(List<String> initialMessages, String topic, int attempt) {
@@ -55,7 +59,6 @@ public class UserWebSocketClient {
                     connected.set(true);
                     System.out.println("✅ WebSocket connected (attempt " + attempt + ")");
 
-                    // Send all initial messages (auth, then subscribe)
                     Mono<Void> sendMessages = Mono.delay(Duration.ofSeconds(1))
                             .thenMany(Flux.fromIterable(initialMessages))
                             .map(session::textMessage)
@@ -68,7 +71,7 @@ public class UserWebSocketClient {
                             .doOnTerminate(() -> {
                                 connected.set(false);
                                 System.out.println("⚠️ WebSocket connection terminated");
-                                scheduleReconnect(initialMessages, topic, attempt + 1);
+                                scheduleReconnect(topic, attempt + 1);
                             })
                             .then();
 
@@ -77,11 +80,31 @@ public class UserWebSocketClient {
         ).subscribe();
     }
 
-    private void scheduleReconnect(List<String> initialMessages, String topic, int attempt) {
-        int delaySeconds = Math.min(60, (int) Math.pow(2, attempt)); // exponential backoff, max 60s
+    private void scheduleReconnect(String topic, int attempt) {
+        int delaySeconds = Math.min(60, (int) Math.pow(2, attempt));
         System.out.println("⏳ Reconnecting in " + delaySeconds + "s (attempt " + attempt + ")");
         Mono.delay(Duration.ofSeconds(delaySeconds))
-                .subscribe(t -> attemptConnection(initialMessages, topic, attempt));
+                .subscribe(t -> attemptConnection(buildInitialMessages(), topic, attempt));
+    }
+
+    /**
+     * Builds fresh auth message with a new nonce each time.
+     */
+    private List<String> buildInitialMessages() {
+        try {
+            ApiRequestJson authRequest = ApiRequestJson.builder()
+                    .id(1L)
+                    .method("public/auth")
+                    .apiKey(ApplicationProperties.getApiKey())
+                    .build();
+
+            String authMessage = signAndParseToJsonString(authRequest, ApplicationProperties.getApiSecret());
+
+            return List.of(authMessage);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to build initial auth message", e);
+        }
     }
 
     private Mono<Void> handleMessage(org.springframework.web.reactive.socket.WebSocketSession session,
@@ -89,7 +112,7 @@ public class UserWebSocketClient {
                                      String topic) {
         System.out.println(Instant.now() + " :: Received payload: " + payload);
         try {
-            // Handle heartbeat
+            // heartbeat
             if (payload.contains("\"method\":\"public/heartbeat\"")) {
                 Heartbeat parsed = objectMapper.readValue(payload, Heartbeat.class);
                 Heartbeat heartbeatResponse = Heartbeat.builder()
@@ -99,14 +122,31 @@ public class UserWebSocketClient {
                 System.out.println(Instant.now() + " :: Sending heartbeat response: " + heartbeatResponse.toJson());
                 return session.send(Mono.just(session.textMessage(heartbeatResponse.toJson()))).then();
             }
-            // Auth success or irrelevant messages
-            else if (payload.contains(",\"method\":\"public/auth\",\"code\":0}") || !payload.contains("\"result\":{")) {
-                return Mono.empty();
+            // successful auth
+            else if (payload.contains("\"method\":\"public/auth\"") && payload.contains("\"code\":0")) {
+                ApiRequestJson subscribeRequest = ApiRequestJson.builder()
+                        .id(2L)
+                        .method("subscribe")
+                        .params(Map.of("channels", List.of("user.order")))
+                        .build();
+
+                String subscribeMessage = objectMapper.writeValueAsString(subscribeRequest);
+                return session.send(Mono.just(session.textMessage(subscribeMessage))).then();
+            }
+            // auth failed (e.g. invalid nonce)
+            else if (payload.contains("\"method\":\"public/auth\"") && payload.contains("\"code\":40102")) {
+                System.err.println("❌ Authentication failed: Invalid nonce. Full payload: " + payload);
+                // close connection to trigger reconnect
+                return session.close();
             }
 
-            // Parse order data
+            // order data
             ApiResponseDto<ApiResultDto<OrderItemDto>> parsed =
                     objectMapper.readValue(payload, new TypeReference<ApiResponseDto<ApiResultDto<OrderItemDto>>>() {});
+
+            if (parsed.getResult() == null) {
+                return Mono.empty(); // skip ack messages with no data
+            }
 
             String formatted = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             System.out.println("[" + formatted + "] Parsed DTO:\n" + parsed);
