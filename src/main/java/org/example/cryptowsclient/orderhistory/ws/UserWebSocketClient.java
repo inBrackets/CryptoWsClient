@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -57,6 +58,7 @@ public class UserWebSocketClient {
 
 
     private Mono<Void> handleMessage(org.springframework.web.reactive.socket.WebSocketSession session, String payload, String topic) {
+        System.out.println(Instant.now() + " :: Following payload appears: " + payload);
         try {
             // Handle heartbeat
 
@@ -66,8 +68,9 @@ public class UserWebSocketClient {
                         .id(parsed.getId())
                         .method("public/respond-heartbeat")
                         .build();
+                System.out.println(Instant.now() + " :: Following payload is sent: " + heartbeatResponse.toJson());
                 return session.send(Mono.just(session.textMessage(heartbeatResponse.toJson()))).then(Mono.empty());
-            } else if (payload.contains("\"method\":\"public/auth\"") || !payload.contains("\"result\":{")) {
+            } else if (payload.contains(",\"method\":\"public/auth\",\"code\":0}") || !payload.contains("\"result\":{")) {
                 return Mono.empty();
             }
             // Handle authentication failure

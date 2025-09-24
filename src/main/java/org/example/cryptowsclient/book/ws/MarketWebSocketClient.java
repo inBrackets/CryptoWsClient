@@ -57,8 +57,8 @@ public class MarketWebSocketClient {
                             .doOnTerminate(() -> System.out.println("WebSocket connection terminated"))
                             .thenMany(Mono.empty());
 
-                    // scheduled keep-alive every 15s
-                    Flux<Void> keepAlive = Flux.interval(Duration.ofSeconds(15))
+                    // scheduled keep-alive every 30s
+                    Flux<Void> keepAlive = Flux.interval(Duration.ofSeconds(30))
                             .flatMap(tick -> {
                                 String heartbeat = "{\"id\":" + tick + ",\"method\":\"public/respond-heartbeat\"}";
                                 return session.send(Mono.just(session.textMessage(heartbeat)));
