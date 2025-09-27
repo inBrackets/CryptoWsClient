@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,39 +39,69 @@ public class OrderHistoryService {
     private final OrderHistoryRepository orderHistoryRepository;
     private final OrderHistoryMapper orderHistoryMapper;
 
-    public ResponseEntity<ApiResponseDto<ApiResultDto<OrderItemDto>>> getOrderHistoryFromLast24Hours() {
+    public List<OrderItemDto> getOrderHistoryFromLast24Hours() {
+
+        long endTime = Instant.now().toEpochMilli();
+        long startTime = endTime - Duration.ofDays(1L).toMillis();
+
+        List<OrderItemDto> orderItemDtoList = new ArrayList<>();
+        for (OrderHistoryEntity orderHistoryEntityItem : orderHistoryRepository.findByCreateTimeBetween(startTime, endTime)) {
+            orderItemDtoList.add(orderHistoryMapper.toDto(orderHistoryEntityItem));
+        }
+
+        return orderItemDtoList;
+    }
+
+    public void loadOrderHistoryForLastDuration(Duration duration) {
+        Long limit = 100L; // max possible value
         String targetUrl = "https://api.crypto.com/exchange/v1/private/get-order-history";
 
-        ApiRequestJson request = ApiRequestJson.builder()
-                .method("private/get-order-history")
-                .params(Map.of(
-                        "instrument_name", "CRO_USD"
-                ))
-                .apiKey(ApplicationProperties.getApiKey())
-                .id(1L)
-                .build();
+        long endTime = Instant.now().toEpochMilli();
+        long startTime = endTime - duration.toMillis();
 
-        String requestBody = signAndParseToJsonString(request, ApplicationProperties.getApiSecret());
 
-        // Create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        List<OrderItemDto> historicalOrders;
+        int totalOrders = 0;
+        do {
+            ApiRequestJson request = ApiRequestJson.builder()
+                    .method("private/get-order-history")
+                    .params(Map.of(
+                            "instrument_name", "CRO_USD",
+                            "start_time", startTime,
+                            "end_time", endTime,
+                            "limit", limit
+                    ))
+                    .apiKey(ApplicationProperties.getApiKey())
+                    .id(1L)
+                    .build();
 
-        // Build the request entity
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+            String requestBody = signAndParseToJsonString(request, ApplicationProperties.getApiSecret());
 
-        ParameterizedTypeReference<ApiResponseDto<ApiResultDto<OrderItemDto>>> typeRef =
-                new ParameterizedTypeReference<>() {
-                };
+            // Create headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Send POST
-        ResponseEntity<ApiResponseDto<ApiResultDto<OrderItemDto>>> response = restTemplate.exchange(
-                targetUrl,
-                HttpMethod.POST,
-                requestEntity,
-                typeRef
-        );
-        return response;
+            // Build the request entity
+            HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+            ParameterizedTypeReference<ApiResponseDto<ApiResultDto<OrderItemDto>>> typeRef =
+                    new ParameterizedTypeReference<>() {
+                    };
+
+            // Send POST
+            ResponseEntity<ApiResponseDto<ApiResultDto<OrderItemDto>>> response = restTemplate.exchange(
+                    targetUrl,
+                    HttpMethod.POST,
+                    requestEntity,
+                    typeRef
+            );
+            historicalOrders = response.getBody().getResult().getData();
+            saveToDB(historicalOrders);
+            endTime = historicalOrders.stream().map(OrderItemDto::getCreateTime).min(Long::compare).orElseThrow();
+            System.out.println("Added " + historicalOrders.size() + " orders to the order history table");
+            totalOrders += historicalOrders.size();
+        } while (historicalOrders.size() == 100);
+        System.out.println("Adding history orders finished with total orders: " + totalOrders);
     }
 
     public ResponseEntity<ApiResponseDto<ApiResultDto<OrderItemDto>>> getAllOpenOrders() {
