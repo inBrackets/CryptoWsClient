@@ -52,6 +52,14 @@ public class OrderHistoryService {
         return orderItemDtoList;
     }
 
+    public BigDecimal getTotalOrderHistoryValueForTheLastDays(Long dayCount) {
+
+        long endTime = Instant.now().toEpochMilli();
+        long startTime = endTime - Duration.ofDays(dayCount).toMillis();
+
+        return orderHistoryRepository.findByCreateTimeBetween(startTime, endTime).stream().map(OrderHistoryEntity::getOrderValue).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     public void loadOrderHistoryForLastDuration(Duration duration) {
         Long limit = 100L; // max possible value
         String targetUrl = "https://api.crypto.com/exchange/v1/private/get-order-history";
