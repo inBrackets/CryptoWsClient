@@ -10,6 +10,7 @@ import org.example.cryptowsclient.orderhistory.db.OrderHistoryEntity;
 import org.example.cryptowsclient.orderhistory.db.OrderHistoryMapper;
 import org.example.cryptowsclient.orderhistory.db.OrderHistoryRepository;
 import org.example.cryptowsclient.orderhistory.dto.OrderItemDto;
+import org.example.cryptowsclient.orderhistory.dto.enums.OrderStatus;
 import org.example.cryptowsclient.orderhistory.dto.enums.OrderType;
 import org.example.cryptowsclient.orderhistory.dto.enums.Side;
 import org.springframework.core.ParameterizedTypeReference;
@@ -57,7 +58,7 @@ public class OrderHistoryService {
         long endTime = Instant.now().toEpochMilli();
         long startTime = endTime - Duration.ofDays(dayCount).toMillis();
 
-        return orderHistoryRepository.findByCreateTimeBetween(startTime, endTime).stream().map(OrderHistoryEntity::getOrderValue).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return orderHistoryRepository.findByCreateTimeBetween(startTime, endTime).stream().filter(x->x.getStatus() == OrderStatus.FILLED).map(OrderHistoryEntity::getOrderValue).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public void loadOrderHistoryForLastDuration(Duration duration) {

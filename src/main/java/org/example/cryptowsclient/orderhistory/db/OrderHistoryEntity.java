@@ -2,12 +2,15 @@ package org.example.cryptowsclient.orderhistory.db;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.cryptowsclient.orderhistory.dto.enums.OrderStatus;
 
 import java.math.BigDecimal;
 
@@ -68,8 +71,9 @@ public class OrderHistoryEntity {
     @Column(name = "cumulative_fee")
     private BigDecimal cumulativeFee;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private OrderStatus status;
 
     @Column(name = "update_user_id")
     private String updateUserId;
