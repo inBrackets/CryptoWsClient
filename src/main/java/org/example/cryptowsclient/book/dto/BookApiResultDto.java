@@ -21,4 +21,7 @@ public class BookApiResultDto {
     @JsonProperty("instrument_name")
     private String instrumentName;
 
+    public String subscription;
+    public String channel;
+
 }

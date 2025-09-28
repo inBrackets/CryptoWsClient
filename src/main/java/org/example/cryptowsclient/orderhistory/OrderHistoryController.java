@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
 
 @RestController
@@ -36,8 +37,12 @@ public class OrderHistoryController {
     @GetMapping("/private/get-order-history-total-value")
     @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
     public ResponseEntity<BigDecimal> forwardRequest(
-            @RequestParam(value = "days_count", required = false, defaultValue = "1") long daysCount
+            @RequestParam(value = "days_count", required = false, defaultValue = "1") long daysCount,
+            @RequestParam(value = "update", required = false, defaultValue = "false") boolean doDatabaseUpdate
     ) {
+        if(doDatabaseUpdate) {
+            orderHistoryService.loadOrderHistoryForLastDuration(Duration.ofDays(daysCount));
+        }
         BigDecimal total = orderHistoryService.getTotalOrderHistoryValueForTheLastDays(daysCount);
 
         return ResponseEntity
