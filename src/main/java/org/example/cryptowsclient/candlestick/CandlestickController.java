@@ -40,4 +40,14 @@ public class CandlestickController {
     ) {
         return ResponseEntity.ok(candlestickService.calculateRsi(barCount, TimeFrame.fromSymbol(timeFrame), instrumentName));
     }
+
+    @GetMapping("/get-stoch*rsi")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
+    private ResponseEntity<List<Map<String, Object>>> getStochRsi(
+            @RequestParam(value = "instrument_name", required = false, defaultValue = "CRO_USD") String instrumentName,
+            @RequestParam(value = "time_frame", required = false, defaultValue = "1m") String timeFrame,
+            @RequestParam(value = "barCount", required = false, defaultValue = "14") int barCount
+    ) {
+        return ResponseEntity.ok(candlestickService.calculateStochRsi(barCount, TimeFrame.fromSymbol(timeFrame), instrumentName));
+    }
 }

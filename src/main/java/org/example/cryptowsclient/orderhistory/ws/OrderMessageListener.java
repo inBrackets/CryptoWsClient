@@ -50,7 +50,7 @@ public class OrderMessageListener {
             BigDecimal currentPrice = book.getBody().getResult().getData().get(0).getAsks().get(0).get(0);
 
             // Get the smaller one
-            BigDecimal newLimitPrice = limitPrice.min(currentPrice).subtract(new BigDecimal("0.0001"));
+            BigDecimal newLimitPrice = limitPrice.min(currentPrice).subtract(new BigDecimal("0.00011"));
             orderHistoryService.createNewOrder("CRO_USD", LIMIT, BUY, newLimitPrice, Long.valueOf(event.getPayload().getResult().getData().get(0).getQuantity()));
         }
         System.out.println("**************************************************");

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.indicators.RSIIndicator;
+import org.ta4j.core.indicators.StochasticRSIIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 
 import java.time.Duration;
@@ -185,6 +186,35 @@ public class CandlestickService {
         RSIIndicator rsi = new RSIIndicator(closePrice, barCount);
 
         return rsi.getValue(series.getEndIndex()).doubleValue();
+    }
+
+    public List<Map<String, Object>> calculateStochRsi(int barCount, TimeFrame timeFrame, String instrumentName) {
+        List<CandlestickWithInstrumentNameDto> candleSticks = getCandlesticks(instrumentName, timeFrame);
+
+        BarSeries series = Ta4jConverter.toBarSeries(candleSticks, timeFrame);
+        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+        RSIIndicator rsi = new RSIIndicator(closePrice, barCount);
+        StochasticRSIIndicator stochRsi = new StochasticRSIIndicator(rsi, barCount);
+        List<Map<String, Object>> rsiValues = new ArrayList<>();
+
+        for (int i = barCount - 1; i <= series.getEndIndex(); i++) {
+            Map<String, Object> entry = new HashMap<>();
+            entry.put("timestamp", series.getBar(i).getEndTime().toInstant().toEpochMilli());
+            entry.put("stoch_rsi", stochRsi.getValue(i).doubleValue());
+            rsiValues.add(entry);
+        }
+        return rsiValues;
+    }
+
+    public double calculateLastStochRsiValue(int barCount, TimeFrame timeFrame, String instrumentName) {
+        List<CandlestickWithInstrumentNameDto> candleSticks = getCandlesticks(instrumentName, timeFrame);
+
+        BarSeries series = Ta4jConverter.toBarSeries(candleSticks, timeFrame);
+        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+        RSIIndicator rsi = new RSIIndicator(closePrice, barCount);
+        StochasticRSIIndicator stochRsi = new StochasticRSIIndicator(rsi, barCount);
+
+        return stochRsi.getValue(series.getEndIndex()).doubleValue();
     }
 
 
