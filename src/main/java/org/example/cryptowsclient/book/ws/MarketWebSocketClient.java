@@ -1,6 +1,7 @@
 package org.example.cryptowsclient.book.ws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.example.cryptowsclient.book.dto.BookDataMessage;
 import org.example.cryptowsclient.book.dto.Heartbeat;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Component
+@Slf4j
 public class MarketWebSocketClient {
 
     private static final String WS_URL = "wss://stream.crypto.com/exchange/v1/market";
@@ -34,7 +36,7 @@ public class MarketWebSocketClient {
         // close old connection if still alive
         if (activeConnection != null && !activeConnection.isDisposed()) {
             activeConnection.dispose();
-            System.out.println("Previous WebSocket connection closed");
+            log.info("Previous WebSocket connection closed");
         }
 
         this.lastSubscribeMessage = subscribeMessage;
@@ -53,8 +55,8 @@ public class MarketWebSocketClient {
                     Flux<Void> receive = session.receive()
                             .map(msg -> msg.getPayloadAsText())
                             .flatMap(payload -> handleMessage(session, payload))
-                            .doOnError(err -> System.err.println("WebSocket error: " + err.getMessage()))
-                            .doOnTerminate(() -> System.out.println("WebSocket connection terminated"))
+                            .doOnError(err -> log.error("WebSocket error: {}", err.getMessage()))
+                            .doOnTerminate(() -> log.info("WebSocket connection terminated"))
                             .thenMany(Mono.empty());
 
                     // scheduled keep-alive every 30s
@@ -70,11 +72,11 @@ public class MarketWebSocketClient {
         ).subscribe(
                 null,
                 error -> {
-                    System.err.println("Connection failed: " + error.getMessage());
+                    log.info("Connection failed: {}", error.getMessage());
                     scheduleReconnect();
                 },
                 () -> {
-                    System.out.println("Connection closed cleanly");
+                    log.info("Connection closed cleanly");
                     scheduleReconnect();
                 }
         );
@@ -95,12 +97,12 @@ public class MarketWebSocketClient {
             // handle book data
             BookDataMessage parsed = objectMapper.readValue(payload, BookDataMessage.class);
             String formatted = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            System.out.println("[" + formatted + "] Parsed DTO:\n" + parsed);
+            log.info("[{}] Parsed DTO:\n{}", formatted, parsed);
 
             messagingTemplate.convertAndSend("/topic/book", parsed);
 
         } catch (Exception e) {
-            System.err.println("Failed to parse message:\n" + payload);
+            log.error("Failed to parse message:\n{}", payload);
             e.printStackTrace();
         }
         return Mono.empty();
@@ -109,7 +111,7 @@ public class MarketWebSocketClient {
     private void scheduleReconnect() {
         // wait 5 seconds before reconnecting
         Mono.delay(Duration.ofSeconds(5)).subscribe(t -> {
-            System.out.println("Reconnecting to " + lastSubscribedChannel + "...");
+            log.info("Reconnecting to {}...", lastSubscribedChannel);
             connect(lastSubscribeMessage, lastSubscribedChannel);
         });
     }

@@ -12,9 +12,11 @@ import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.example.cryptowsclient.common.ApiRequestJson;
 
+@Slf4j
 public class SigningUtil {
 
     private static final String HMAC_SHA256 = "HmacSHA256";
@@ -124,11 +126,11 @@ public class SigningUtil {
                 .nonce(1589594102779L)
                 .build();
 
-        System.out.println(genSignature(apiRequestJson, "se"));
+        log.info(genSignature(apiRequestJson, "se"));
 
-        System.out.println(sign(apiRequestJson, "se"));
+        log.info(sign(apiRequestJson, "se").toString());
 
-        System.out.println(signAndParseToJsonString(apiRequestJson, "se"));
+        log.info(signAndParseToJsonString(apiRequestJson, "se"));
 
     }
 }

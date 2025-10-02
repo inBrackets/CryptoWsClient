@@ -1,5 +1,6 @@
 package org.example.cryptowsclient.clock;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Random;
 
 @Component
+@Slf4j
 public class TimestampPublisher {
 
     private final SimpMessagingTemplate messagingTemplate;
@@ -29,20 +31,20 @@ public class TimestampPublisher {
     public void publishTimestamp() {
         String currentTime = LocalDateTime.now().format(formatter);
         messagingTemplate.convertAndSend("/topic/user.balance", currentTime);
-        System.out.println("Timestamp published: " + currentTime);
+        log.info("Timestamp published: {}", currentTime);
     }
 
     @Scheduled(fixedRate = 5000000)
     public void publishRandomAnimal() {
         String animal = animals.get(random.nextInt(animals.size()));
         messagingTemplate.convertAndSend("/topic/random.animal", animal);
-        System.out.println("Animal published: " + animal);
+        log.info("Animal published: {}", animal);
     }
 
     @Scheduled(fixedRate = 35700000)
     public void publishRandomFood() {
         String food = foods.get(random.nextInt(foods.size()));
         messagingTemplate.convertAndSend("/topic/random.food", food);
-        System.out.println("Food published: " + food);
+        log.info("Food published: {}", food);
     }
 }

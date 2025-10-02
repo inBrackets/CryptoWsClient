@@ -2,6 +2,7 @@ package org.example.cryptowsclient.candlestick;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.cryptowsclient.candlestick.db.CandlestickEntity;
 import org.example.cryptowsclient.candlestick.db.CandlestickId;
 import org.example.cryptowsclient.candlestick.db.CandlestickRepository;
@@ -34,6 +35,7 @@ import static java.lang.Thread.sleep;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CandlestickService {
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -124,7 +126,7 @@ public class CandlestickService {
 
     @Transactional
     public void saveLastDaysCandleSticks(String instrument, TimeFrame timeframe, int daysCount) {
-        System.out.println(format("Started to add to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
+        log.info("Started to add to DB candlesticks with instrument {} and timeframe {}", instrument, timeframe.getSymbol());
         long currentTime = Instant.now().toEpochMilli();
         long startTime = currentTime - Duration.ofDays(daysCount).toMillis();
 
@@ -139,12 +141,12 @@ public class CandlestickService {
             startTime = startTime + durationOfCandlesticksInMillis;
         }
 
-        System.out.println(format("Added to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
+        log.info("Added to DB candlesticks with instrument {} and timeframe {}", instrument, timeframe.getSymbol());
     }
 
     @Transactional
     public void saveLastXCandleSticks(String instrument, TimeFrame timeframe, int candlestickCount) {
-        System.out.println(format("Started to add to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
+        log.info("Started to add to DB candlesticks with instrument {} and timeframe {}", instrument, timeframe.getSymbol());
 
         ResponseEntity<ApiResponseDto<ApiResultDto<CandlestickDto>>> response = null;
         try {
@@ -158,7 +160,7 @@ public class CandlestickService {
 
         saveCandlesticks(instrument, timeframe, lastXCandleSticks);
 
-        System.out.println(format("Added to DB candlesticks with instrument %s and timeframe %s", instrument, timeframe.getSymbol()));
+        log.info("Added to DB candlesticks with instrument {} and timeframe {}", instrument, timeframe.getSymbol());
     }
 
     public List<Map<String, Object>> calculateRsi(int barCount, TimeFrame timeFrame, String instrumentName) {

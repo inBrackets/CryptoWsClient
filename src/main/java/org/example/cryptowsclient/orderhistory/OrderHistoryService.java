@@ -1,6 +1,7 @@
 package org.example.cryptowsclient.orderhistory;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.cryptowsclient.common.ApiCreateOrderResultDto;
 import org.example.cryptowsclient.common.ApiRequestJson;
 import org.example.cryptowsclient.common.ApiResponseDto;
@@ -34,6 +35,7 @@ import static org.example.cryptowsclient.orderhistory.dto.enums.OrderType.LIMIT;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OrderHistoryService {
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -107,10 +109,10 @@ public class OrderHistoryService {
             historicalOrders = response.getBody().getResult().getData();
             saveToDB(historicalOrders);
             endTime = historicalOrders.stream().map(OrderItemDto::getCreateTime).min(Long::compare).orElseThrow();
-            System.out.println("Added " + historicalOrders.size() + " orders to the order history table");
+            log.info("Added {} orders to the order history table", historicalOrders.size());
             totalOrders += historicalOrders.size();
         } while (historicalOrders.size() == 100);
-        System.out.println("Adding history orders finished with total orders: " + totalOrders);
+        log.info("Adding history orders finished with total orders: {}", totalOrders);
     }
 
     public ResponseEntity<ApiResponseDto<ApiResultDto<OrderItemDto>>> getAllOpenOrders() {

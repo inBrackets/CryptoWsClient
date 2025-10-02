@@ -2,6 +2,7 @@ package org.example.cryptowsclient.candlestick.db;
 
 import javazoom.jl.player.Player;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.cryptowsclient.candlestick.CandlestickService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -31,6 +32,7 @@ import static org.example.cryptowsclient.candlestick.enums.TimeFrame.TWO_WEEKS;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class StartupCandlestickLoader {
 
     private final CandlestickService candlestickService;
@@ -101,7 +103,7 @@ public class StartupCandlestickLoader {
             boolean con_1m = rsi1m > 50;
             boolean con_5m = rsi5m > 50;
             boolean con_15m = rsi15m > 50;
-            System.out.println(formatted + "Current RSI: 1m=" + rsi1m + ", 5m=" + rsi5m + ", 15m=" + rsi15m);
+            log.info("{}Current RSI: 1m={}, 5m={}, 15m={}", formatted, rsi1m, rsi5m, rsi15m);
             if (con_1m && con_5m && con_15m) {
                 try (InputStream is = getClass().getResourceAsStream("/sounds/cash-register-purchase.mp3")) {
                     if (is == null) {
@@ -112,7 +114,7 @@ public class StartupCandlestickLoader {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                System.out.println(formatted + " :: Time for CRO_USD Execution!!!");
+                log.info("{} :: Time for CRO_USD Execution!!!", formatted);
             }
         }
     }

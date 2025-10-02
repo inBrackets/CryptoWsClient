@@ -1,6 +1,7 @@
 package org.example.cryptowsclient.orderhistory.ws;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.cryptowsclient.book.BookRestService;
 import org.example.cryptowsclient.book.dto.BookApiResultDto;
 import org.example.cryptowsclient.candlestick.CandlestickService;
@@ -27,6 +28,7 @@ import static org.example.cryptowsclient.orderhistory.dto.enums.Side.SELL;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OrderMessageListener {
 
     private final CandlestickService candlestickService;
@@ -38,11 +40,11 @@ public class OrderMessageListener {
         ApiResponseDto<ApiResultDto<OrderItemDto>> payload = event.getPayload();
 
         if (payload.getResult() == null || payload.getResult().getData() == null) {
-            System.out.println(format("Ignoring non-data message: %s", payload));
+            log.info("Ignoring non-data message: {}", payload);
             return;
         }
 
-        System.out.println(format("The status %s has been caught!", payload.getResult().getData().get(0).getStatus().name()));
+        log.info("The status {} has been caught!", payload.getResult().getData().get(0).getStatus().name());
 
         if(payload.getResult().getData().get(0).getStatus().equals(FILLED) && payload.getResult().getData().get(0).getSide() == SELL) {
             ResponseEntity<ApiResponseDto<BookApiResultDto>> book = bookRestService.getOrderBook("CRO_USD", 10);
@@ -53,8 +55,8 @@ public class OrderMessageListener {
             BigDecimal newLimitPrice = limitPrice.min(currentPrice).subtract(new BigDecimal("0.00011"));
             orderHistoryService.createNewOrder("CRO_USD", LIMIT, BUY, newLimitPrice, Long.valueOf(event.getPayload().getResult().getData().get(0).getQuantity()));
         }
-        System.out.println("**************************************************");
-        System.out.println("Listener received order message: " + payload);
+        log.info("**************************************************");
+        log.info("Listener received order message: {}", payload);
     }
 
     @Scheduled(fixedRate = 5, timeUnit = SECONDS)

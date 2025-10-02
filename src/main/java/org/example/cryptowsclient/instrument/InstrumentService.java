@@ -1,6 +1,7 @@
 package org.example.cryptowsclient.instrument;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.cryptowsclient.common.ApiResponseDto;
 import org.example.cryptowsclient.common.ApiResultDto;
 import org.springframework.core.ParameterizedTypeReference;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class InstrumentService {
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -32,7 +34,7 @@ public class InstrumentService {
                     .toList();
 
             instrumentRepository.saveAll(entities);
-            System.out.println("✅ Saved " + entities.size() + " instruments to DB");
+            log.info("✅ Saved {} instruments to DB", entities.size());
         }
     }
 

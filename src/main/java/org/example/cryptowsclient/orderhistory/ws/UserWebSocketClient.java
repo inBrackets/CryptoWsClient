@@ -2,6 +2,7 @@ package org.example.cryptowsclient.orderhistory.ws;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.example.cryptowsclient.book.dto.Heartbeat;
 import org.example.cryptowsclient.common.ApiRequestJson;
 import org.example.cryptowsclient.common.ApiResponseDto;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.example.cryptowsclient.auth.SigningUtil.signAndParseToJsonString;
 
 @Component
+@Slf4j
 public class UserWebSocketClient {
 
     private static final String WS_URL = "wss://stream.crypto.com/exchange/v1/user";
@@ -42,7 +44,7 @@ public class UserWebSocketClient {
         this.eventPublisher = eventPublisher;
 
         Hooks.onErrorDropped(e -> {
-            System.err.println("Dropped error: " + e.getMessage());
+            log.error("Dropped error: {}", e.getMessage());
         });
     }
 
@@ -57,7 +59,7 @@ public class UserWebSocketClient {
                 URI.create(WS_URL),
                 session -> {
                     connected.set(true);
-                    System.out.println("✅ WebSocket connected (attempt " + attempt + ")");
+                    log.info("✅ WebSocket connected (attempt {})", attempt);
 
                     // Send all initial messages (auth, then subscribe)
                     Mono<Void> sendMessages = Mono.delay(Duration.ofSeconds(1))
@@ -68,10 +70,10 @@ public class UserWebSocketClient {
                     Mono<Void> receive = session.receive()
                             .map(msg -> msg.getPayloadAsText())
                             .flatMap(payload -> handleMessage(session, payload, topic))
-                            .doOnError(err -> System.err.println("WebSocket error: " + err.getMessage()))
+                            .doOnError(err -> log.error("WebSocket error: {}", err.getMessage()))
                             .doOnTerminate(() -> {
                                 connected.set(false);
-                                System.out.println("⚠️ WebSocket connection terminated");
+                                log.info("⚠️ WebSocket connection terminated");
                                 scheduleReconnect(topic, attempt + 1);
                             })
                             .then();
@@ -83,7 +85,7 @@ public class UserWebSocketClient {
 
     private void scheduleReconnect(String topic, int attempt) {
         int delaySeconds = Math.min(60, (int) Math.pow(2, attempt));
-        System.out.println("⏳ Reconnecting in " + delaySeconds + "s (attempt " + attempt + ")");
+        log.info("⏳ Reconnecting in {}s (attempt {})", delaySeconds, attempt);
         Mono.delay(Duration.ofSeconds(delaySeconds))
                 .subscribe(t -> attemptConnection(buildInitialMessages(), topic, attempt));
     }
@@ -111,7 +113,7 @@ public class UserWebSocketClient {
     private Mono<Void> handleMessage(org.springframework.web.reactive.socket.WebSocketSession session,
                                      String payload,
                                      String topic) {
-        System.out.println(Instant.now() + " :: Received payload: " + payload);
+        log.info("{} :: Received payload: {}", Instant.now(), payload);
         try {
             // heartbeat
             if (payload.contains("\"method\":\"public/heartbeat\"")) {
@@ -120,7 +122,7 @@ public class UserWebSocketClient {
                         .id(parsed.getId())
                         .method("public/respond-heartbeat")
                         .build();
-                System.out.println(Instant.now() + " :: Sending heartbeat response: " + heartbeatResponse.toJson());
+                log.info("{} :: Sending heartbeat response: {}", Instant.now(), heartbeatResponse.toJson());
                 return session.send(Mono.just(session.textMessage(heartbeatResponse.toJson()))).then();
             }
             // successful auth
@@ -136,7 +138,7 @@ public class UserWebSocketClient {
             }
             // auth failed (e.g. invalid nonce)
             else if (payload.contains("\"method\":\"public/auth\"") && payload.contains("\"code\":40102")) {
-                System.err.println("❌ Authentication failed: Invalid nonce. Full payload: " + payload);
+                log.error("❌ Authentication failed: Invalid nonce. Full payload: {}", payload);
                 // close connection to trigger reconnect
                 return session.close();
             }
@@ -150,13 +152,13 @@ public class UserWebSocketClient {
             }
 
             String formatted = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            System.out.println("[" + formatted + "] Parsed DTO:\n" + parsed);
+            log.info("[{}] Parsed DTO:\n{}", formatted, parsed);
 
             messagingTemplate.convertAndSend(topic, parsed);
             eventPublisher.publishEvent(new OrderMessageEvent(parsed));
 
         } catch (Exception e) {
-            System.err.println("❌ Failed to parse message:\n" + payload);
+            log.error("❌ Failed to parse message:\n{}", payload);
             e.printStackTrace();
         }
         return Mono.empty();
