@@ -1,0 +1,7 @@
+<highcharts-chart
+  *ngIf="chartOptions.series?.length"
+  [constructorType]="'stockChart'"
+  [options]="chartOptions"
+  (chartInstance)="onChartInstance($event)"
+  class="chart"
+/>

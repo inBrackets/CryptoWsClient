@@ -13,6 +13,9 @@ import {
 import {CandlestickComponent} from './pages/rest-channels/candlestick/candlestick.component';
 import {RsiIndicatorSingleTimeframeComponent} from './components/charts/ta4j-indicators/rsi-indicator-single-timeframe/rsi-indicator-single-timeframe.component';
 import {RsiChartsPageComponent} from './pages/ta4j-indicators/rsi-charts-page/rsi-charts-page.component';
+import {
+  DynamicCandlestickChartComponent
+} from './components/charts/dynamic-candlestick-chart/dynamic-candlestick-chart.component';
 
 export const routes: Routes = [
   {
@@ -24,6 +27,7 @@ export const routes: Routes = [
         path: 'ws/book', component: BookComponent,
       },
       { path: 'rest/candlesticks', component: CandlestickComponent },
+      { path: 'rest/dynamic-candlesticks', component: DynamicCandlestickChartComponent },
       {
         path: 'stock-single-line-series', component: StockSingleLineSeriesComponent,
       },
