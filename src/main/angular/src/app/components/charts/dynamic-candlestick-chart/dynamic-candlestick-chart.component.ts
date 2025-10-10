@@ -50,10 +50,14 @@ export class DynamicCandlestickChartComponent implements OnInit, OnDestroy {
   }
 
   startLiveLastCandleUpdates() {
+    if (!this.websocketSrv.isConnected()) {
+      this.websocketSrv.connect();
+    }
 
-    this.websocketSrv.connect();
+    // 🔁 Clean up any previous subscription before creating a new one
+    this.subscription?.unsubscribe();
 
-    this.websocketSrv.orderbook$.subscribe(message => {
+    this.subscription = this.websocketSrv.orderbook$.subscribe(message => {
       const data = message.result.data[0];
 
       this.bids = data.bids.map(([price, size, count]) => ({
@@ -67,10 +71,12 @@ export class DynamicCandlestickChartComponent implements OnInit, OnDestroy {
         y: size,
         price: +price,
       })) as Highcharts.PointOptionsObject[];
-        console.log('Bids:', this.bids);
-        console.log('Asks:', this.asks);
-        this.updateLastCandleWithMidPrice();
-      });
+
+      console.log('Bids:', this.bids);
+      console.log('Asks:', this.asks);
+
+      this.updateLastCandleWithMidPrice();
+    });
   }
 
   updateLastCandleWithMidPrice() {
@@ -105,8 +111,11 @@ export class DynamicCandlestickChartComponent implements OnInit, OnDestroy {
     const bestBid = bids.length ? Math.max(...bids.map(extractPrice)) : 0;
     const bestAsk = asks.length ? Math.min(...asks.map(extractPrice)) : 0;
 
-    if (bestBid != null && bestAsk != null) return (bestBid + bestAsk) / 2;
-    return bestBid ?? bestAsk;
+    if (bestBid != null && bestAsk != null){
+      const mid = (bestBid + bestAsk) / 2;
+      return Math.round(mid * 1e5) / 1e5;
+    }
+    return Math.round((bestBid ?? bestAsk) * 1e5) / 1e5;
   }
 
   initChart() {

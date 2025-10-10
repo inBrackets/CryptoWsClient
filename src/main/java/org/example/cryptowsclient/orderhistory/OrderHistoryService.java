@@ -108,6 +108,7 @@ public class OrderHistoryService {
             );
             historicalOrders = response.getBody().getResult().getData();
             saveToDB(historicalOrders);
+            if (historicalOrders.isEmpty()) break;
             endTime = historicalOrders.stream().map(OrderItemDto::getCreateTime).min(Long::compare).orElseThrow();
             log.info("Added {} orders to the order history table", historicalOrders.size());
             totalOrders += historicalOrders.size();
