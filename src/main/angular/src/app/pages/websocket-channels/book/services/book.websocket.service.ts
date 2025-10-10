@@ -33,6 +33,7 @@ export class BookWebsocketService {
     console.log('[BookWebsocketService] Initializing WebSocket connection...');
 
     this.stompClient = new Client({
+      // Use SockJS as the transport
       webSocketFactory: () => new SockJS(this.websocketEndpoint),
       reconnectDelay: 5000,
       debug: () => {
