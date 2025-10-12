@@ -1,8 +1,8 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import {Component, inject, OnDestroy, OnInit} from '@angular/core';
 import * as Highcharts from 'highcharts/highstock';
-import { HighchartsChartComponent, providePartialHighcharts } from 'highcharts-angular';
-import { NgIf } from '@angular/common';
-import { Subscription, interval, switchMap } from 'rxjs';
+import {HighchartsChartComponent, providePartialHighcharts} from 'highcharts-angular';
+import {NgIf} from '@angular/common';
+import {Subscription, interval, switchMap} from 'rxjs';
 import {CandlestickRestService} from '../../../pages/rest-channels/candlestick/services/candlestick.rest.service';
 import {CandlestickWithInstrumentName} from '../../../pages/rest-channels/candlestick/model/dto';
 import {BookWebsocketService} from '../../../pages/websocket-channels/book/services/book.websocket.service';
@@ -25,6 +25,7 @@ export class DynamicCandlestickChartComponent implements OnInit, OnDestroy {
   websocketSrv = inject(BookWebsocketService);
 
   data: [number, number, number, number, number][] = [];
+  vData: { x: number; y: number; color: string; }[] = [];
   chartOptions: Highcharts.Options = {};
   Highcharts: typeof Highcharts = Highcharts;
   chart?: Highcharts.Chart;
@@ -39,6 +40,13 @@ export class DynamicCandlestickChartComponent implements OnInit, OnDestroy {
       this.data = response.map(
         ({instrumentName, o, h, l, c, v, t}) => [t, o, h, l, c]
       );
+
+      this.vData = response.map(({instrumentName, o, h, l, c, v, t}) => ({
+        x: t,
+        y: v,
+        color: +c > +o ? '#26a69a' : '#ef5350' // green if close > open
+      }));
+
       this.initChart();
       setTimeout(() => this.startLiveLastCandleUpdates(), 300);
       this.startAutoRefreshCandles();
@@ -98,7 +106,7 @@ export class DynamicCandlestickChartComponent implements OnInit, OnDestroy {
     lastPoint.update(
       [lastPoint.x, open, Math.max(high, close), Math.min(low, close), close],
       true,
-      { duration: 150, easing: 'easeOutQuad' }
+      {duration: 150, easing: 'easeOutQuad'}
     );
   }
 
@@ -111,7 +119,7 @@ export class DynamicCandlestickChartComponent implements OnInit, OnDestroy {
     const bestBid = bids.length ? Math.max(...bids.map(extractPrice)) : 0;
     const bestAsk = asks.length ? Math.min(...asks.map(extractPrice)) : 0;
 
-    if (bestBid != null && bestAsk != null){
+    if (bestBid != null && bestAsk != null) {
       const mid = (bestBid + bestAsk) / 2;
       return Math.round(mid * 1e5) / 1e5;
     }
@@ -120,9 +128,37 @@ export class DynamicCandlestickChartComponent implements OnInit, OnDestroy {
 
   initChart() {
     this.chartOptions = {
-      chart: { width: null },
-      rangeSelector: { selected: 1 },
-      title: { text: 'AAPL Stock Price' },
+      chart: {width: null},
+      rangeSelector: {selected: 1},
+      title: {text: 'AAPL Stock Price'},
+      yAxis: [{
+        startOnTick: false,
+        endOnTick: false,
+        labels: {
+          align: 'right',
+          x: -3
+        },
+        title: {
+          text: 'OHLC'
+        },
+        height: '60%',
+        lineWidth: 2,
+        resize: {
+          enabled: true
+        }
+      }, {
+        labels: {
+          align: 'right',
+          x: -3
+        },
+        title: {
+          text: 'Volume'
+        },
+        top: '65%',
+        height: '35%',
+        offset: 0,
+        lineWidth: 2
+      }],
       series: [{
         type: 'candlestick',
         id: 'aapl-series',
@@ -130,9 +166,17 @@ export class DynamicCandlestickChartComponent implements OnInit, OnDestroy {
         data: this.data,
         color: '#FF7F7F',
         upColor: '#90EE90',
-        lastPrice: { enabled: true, label: { enabled: true } },
-      }],
-      credits: { enabled: false },
+        lastPrice: {enabled: true, label: {enabled: true}},
+      },
+        {
+          type: 'column',
+          name: 'Volume',
+          id: 'volume',
+          data: this.vData,
+          yAxis: 1
+        }
+      ],
+      credits: {enabled: false},
     };
   }
 
@@ -144,9 +188,18 @@ export class DynamicCandlestickChartComponent implements OnInit, OnDestroy {
         this.data = response.map(
           ({instrumentName, o, h, l, c, v, t}) => [t, o, h, l, c]
         );
+        this.vData = response.map(({instrumentName, o, h, l, c, v, t}) => ({
+          x: t,
+          y: v,
+          color: +c > +o ? '#26a69a' : '#ef5350' // green if close > open
+        }));
         const series = this.chart?.get('aapl-series') as Highcharts.Series;
         if (series) {
           series.setData(this.data, true);
+        }
+        const vSeries = this.chart?.get('volume') as Highcharts.Series;
+        if (vSeries) {
+          vSeries.setData(this.vData, true);
         }
       });
   }
