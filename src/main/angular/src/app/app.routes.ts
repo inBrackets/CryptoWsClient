@@ -16,6 +16,7 @@ import {RsiChartsPageComponent} from './pages/ta4j-indicators/rsi-charts-page/rs
 import {
   DynamicCandlestickChartComponent
 } from './components/charts/dynamic-candlestick-chart/dynamic-candlestick-chart.component';
+import {InstrumentComponent} from './pages/rest-channels/instrument/instrument.component';
 
 export const routes: Routes = [
   {
@@ -27,6 +28,7 @@ export const routes: Routes = [
         path: 'ws/book', component: BookComponent,
       },
       { path: 'rest/candlesticks', component: CandlestickComponent },
+      { path: 'rest/instruments', component: InstrumentComponent },
       { path: 'rest/dynamic-candlesticks', component: DynamicCandlestickChartComponent },
       {
         path: 'stock-single-line-series', component: StockSingleLineSeriesComponent,
