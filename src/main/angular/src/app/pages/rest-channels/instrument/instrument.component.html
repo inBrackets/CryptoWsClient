@@ -1,1 +1,7 @@
 <p>instrument works! (see console log)</p>
+<highcharts-chart
+  *ngIf="chartOptions.series?.length"
+  [constructorType]="'chart'"
+  [options]="chartOptions"
+  class="chart">
+</highcharts-chart>
