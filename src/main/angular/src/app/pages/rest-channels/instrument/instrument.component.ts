@@ -27,12 +27,19 @@ export class InstrumentComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {}
 
   ngOnInit(): void {
+    const filterSymbols = ['ADA', 'ATOM'];
+
     this.instrumentSrv.getCcyPairsInstruments().subscribe((response: Instrument[]) => {
       console.log('Instruments:', response);
 
-      const networkData: [string, string][] = response.map(inst => [inst.base_ccy, inst.quote_ccy]);
+      // Filter only CCY_PAIRs where base or quote currency matches one of the symbols
+      const filteredPairs = response
+        .filter(inst => filterSymbols.includes(inst.base_ccy) || filterSymbols.includes(inst.quote_ccy));
 
-      console.log('Network data:', networkData);
+      // Map to network data format
+      const networkData: [string, string][] = filteredPairs.map(inst => [inst.base_ccy, inst.quote_ccy]);
+
+      console.log('Filtered network data:', networkData);
 
       this.updateChart(networkData);
     });
@@ -53,6 +60,9 @@ export class InstrumentComponent implements OnInit, OnDestroy {
         align: 'left'
       },
       plotOptions: {
+        series: {
+          turboThreshold: 0
+        },
         networkgraph: {
           keys: ['from', 'to'],
           layoutAlgorithm: {
