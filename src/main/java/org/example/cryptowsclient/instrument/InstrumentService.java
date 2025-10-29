@@ -52,4 +52,11 @@ public class InstrumentService {
                 .collect(Collectors.toList());
     }
 
+    public List<InstrumentDto> getAllCcyPairs() {
+        return instrumentRepository.findAll().stream()
+                .map(instrumentMapper::toDto)
+                .filter(x->x.getInstType().equalsIgnoreCase("CCY_PAIR"))
+                .collect(Collectors.toList());
+    }
+
 }

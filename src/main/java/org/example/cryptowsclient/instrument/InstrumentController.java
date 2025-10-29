@@ -24,4 +24,12 @@ public class InstrumentController {
                 .status(HttpStatus.OK)
                 .body(instrumentService.getAllInstruments());
     }
+
+    @GetMapping("/get-ccy-pairs")
+    @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:8080"})
+    private ResponseEntity<List<InstrumentDto>> getCcyPairs() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(instrumentService.getAllCcyPairs());
+    }
 }
